@@ -1,0 +1,88 @@
+<android.support.percent.PercentRelativeLayout xmlns:ads="http://schemas.android.com/apk/res-auto"
+                                               xmlns:android="http://schemas.android.com/apk/res/android"
+                                               xmlns:app="http://schemas.android.com/apk/res-auto"
+                                               xmlns:tools="http://schemas.android.com/tools"
+                                               android:layout_width="match_parent"
+                                               android:layout_height="match_parent"
+                                               android:background="#0099cc"
+                                               tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/button_layout"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+        <Button
+            android:id="@+id/left_button"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:padding="20dp"
+            android:text="@string/left_text"/>
+
+        <LinearLayout
+            android:id="@+id/timer_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/timer_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:text="@string/time_elapsed_text"
+                android:textSize="21sp"/>
+
+            <TextView
+                android:id="@+id/timer_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:text="00:00"
+                android:textSize="21sp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/right_button"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:padding="20dp"
+            android:text="@string/right_text"/>
+    </LinearLayout>
+
+    <com.bowstringllp.runjohny.GameBoard
+        android:id="@+id/the_canvas"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/button_layout"/>
+
+    <include
+        android:id="@+id/scoreboard_layout"
+        layout="@layout/scoreboard_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        app:layout_widthPercent="50%"/>
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/scoreboard_layout"
+        android:visibility="gone"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_unit_id_test"/>
+
+    <TextView
+        android:id="@+id/ready_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="20dp"
+        android:text="@string/ready_text"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="28sp"/>
+</android.support.percent.PercentRelativeLayout>
