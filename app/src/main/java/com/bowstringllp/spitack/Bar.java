@@ -1,4 +1,4 @@
-package com.bowstringllp.runjohny;
+package com.bowstringllp.spitack;
 
 import android.os.CountDownTimer;
 

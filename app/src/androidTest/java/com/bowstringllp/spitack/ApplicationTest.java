@@ -1,4 +1,4 @@
-package com.bowstringllp.runjohny;
+package com.bowstringllp.spitack;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

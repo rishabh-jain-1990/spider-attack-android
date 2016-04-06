@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.bowstringllp.runjohny.Johny
+    <com.bowstringllp.spitack.Johny
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:background="#ccc"

@@ -1,4 +1,4 @@
-package com.bowstringllp.runjohny;
+package com.bowstringllp.spitack;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.bowstringllp.runjohny.util.SystemUiHider;
+import com.bowstringllp.spitack.util.SystemUiHider;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
@@ -108,7 +108,7 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
         mixpanel = MixpanelAPI.getInstance(this, getString(R.string.mixpanel_token));
         setContentView(R.layout.activity_main);
 
-// Create the Google API Client with access to Plus and Games
+    // Create the Google API Client with access to Plus and Games
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

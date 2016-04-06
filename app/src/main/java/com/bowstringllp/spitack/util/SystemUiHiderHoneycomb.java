@@ -1,4 +1,4 @@
-package com.bowstringllp.runjohny.util;
+package com.bowstringllp.spitack.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

@@ -1,4 +1,4 @@
-package com.bowstringllp.runjohny.util;
+package com.bowstringllp.spitack.util;
 
 import android.app.Activity;
 import android.view.View;

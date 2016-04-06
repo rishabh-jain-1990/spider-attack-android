@@ -1,4 +1,4 @@
-package com.bowstringllp.runjohny;
+package com.bowstringllp.spitack;
 
 /**
  * Created by rishabhjain on 12/24/15.
@@ -6,10 +6,10 @@ package com.bowstringllp.runjohny;
 public class Player {
     private int xStart;
     private int xEnd;
-    private int width = 50;
+    private int width = 70;
     private int yStart;
     private int yEnd;
-    private int height = 50;
+    private int height = 150;
     private int addFactor;
 
     public int getxStart() {

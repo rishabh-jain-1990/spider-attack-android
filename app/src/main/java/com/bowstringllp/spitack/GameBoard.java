@@ -1,4 +1,4 @@
-package com.bowstringllp.runjohny;
+package com.bowstringllp.spitack;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.NinePatchDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -20,8 +21,13 @@ public class GameBoard extends View {
 
     private final Paint p;
     private final int NUM_OF_STARS;
-    private final Bitmap bm1;
-    private final Bitmap bm2;
+    private final NinePatchDrawable spiderImage;
+    private final Bitmap playerImage;
+    private final int spiderImageWidth;
+    private final int spiderImageHeight;
+    private final int playerImageWidth;
+    private final int playerImageHeight;
+    private final Bitmap spiderImageBitmap;
     private int barWidth;
     private int yPosition = 5;
     private int addFactor = 20;
@@ -43,10 +49,15 @@ public class GameBoard extends View {
         p = new Paint();
         NUM_OF_STARS = MainActivity.getNoOfStars();
         barArray = new Bar[NUM_OF_STARS];
-        bm1 = BitmapFactory.decodeResource(getResources(), R.drawable.johnny);
-        bm2 = BitmapFactory.decodeResource(getResources(), R.drawable.johnny1);
-
+        spiderImage = (NinePatchDrawable) getResources().getDrawable(R.drawable.spider_patch);
+        spiderImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.spider_patch);
+        playerImage = BitmapFactory.decodeResource(getResources(), R.drawable.player);
         player = new Player();
+
+        spiderImageWidth = spiderImage.getMinimumWidth();
+        spiderImageHeight = spiderImage.getMinimumHeight();
+        playerImageWidth = playerImage.getWidth();
+        playerImageHeight = playerImage.getHeight();
     }
 
     //return the point of the last collision
@@ -72,22 +83,29 @@ public class GameBoard extends View {
 
             Rect r2 = new Rect(barArray[h].getxStart(), 0, barArray[h].getxEnd(), barArray[h].getyEnd());
             if (r1.intersect(r2)) {
-                for (int i = r1.left; i < r1.right; i++) {
-                    for (int j = r1.top; j < r1.bottom; j++) {
-                        if (bm1.getPixel(i - r3.left, j - r3.top) !=
-                                Color.TRANSPARENT) {
-                            if (bm2.getPixel(i - r2.left, j - r2.top) !=
+                for (float i = r1.left; i < r1.right; i++) {
+                    for (float j = r1.top; j < r1.bottom; j++) {
+                        try {
+                            int scaledSpiderX = (int) ((i - r2.left) / r2.width() * spiderImageWidth);
+                            int scaledSpiderY = (int) ((j - r2.top) / r2.height() * spiderImageHeight);
+                            int scaledPlayerX = (int) ((i - r3.left) / r3.width() * playerImageWidth);
+                            int scaledPlayerY = (int) ((j - r3.top) / r3.height() * playerImageHeight);
+
+                            if (playerImage.getPixel(scaledPlayerX, scaledPlayerY) !=
                                     Color.TRANSPARENT) {
-                                lastCollision = new Point(barArray[h].getxStart() +
-                                        i - r2.left, 0 + j - r2.top);
-                                return true;
+                                if (spiderImageBitmap.getPixel(scaledSpiderX, scaledSpiderY) !=
+                                        Color.TRANSPARENT) {
+                                    lastCollision = new Point(barArray[h].getxStart() +
+                                            (int) i - r2.left, (int) (0 + j - r2.top));
+                                    return true;
+                                }
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }
             }
-
-
         }
         lastCollision = new Point(-1, -1);
         return false;
@@ -104,17 +122,18 @@ public class GameBoard extends View {
     @Override
     synchronized public void onDraw(Canvas canvas) {
 
-        if(player.getyEnd() == 0) {
+        if (player.getyEnd() == 0) {
             player.setyEnd(getHeight());
             player.setyStart(getHeight() - player.getHeight());
             player.setxStart(getWidth() / 2);
         }
         //create a black canvas
         p.setColor(Color.BLACK);
-        p.setAlpha(255);
+        p.setAlpha(0);
         p.setStrokeWidth(1);
         canvas.drawRect(0, 0, getWidth(), getHeight(), p);
 
+        p.setAlpha(255);
         if (barWidth == 0)
             barWidth = getWidth() / NUM_OF_STARS;
 
@@ -148,7 +167,9 @@ public class GameBoard extends View {
             barArray[i].setyEnd(barArray[i].getyEnd() + barArray[i].getAddFactor());
 
             Rect rect = new Rect(barArray[i].getxStart(), 0, barArray[i].getxEnd(), barArray[i].getyEnd());
-            canvas.drawBitmap(bm1, null, rect, p);
+            spiderImage.setBounds(rect);
+            spiderImage.draw(canvas);
+            //canvas.drawBitmap(spiderImage, null, rect, p);
 
             p.setColor(Color.GREEN);
 
@@ -163,7 +184,7 @@ public class GameBoard extends View {
         p.setStrokeWidth(player.getWidth());
 
         Rect rect = new Rect(player.getxStart(), player.getyStart(), player.getxEnd(), player.getyEnd());
-        canvas.drawBitmap(bm2, null, rect, p);
+        canvas.drawBitmap(playerImage, null, rect, p);
 //        for (int i = 0; i < NUM_OF_STARS; i++) {
 //            if (i == safeBarFirst || i == safeBarSecond)
 //                continue;
