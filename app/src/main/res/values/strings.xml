@@ -15,5 +15,6 @@
     <string name="leaderboard_text">Leaderboard</string>
     <string name="high_score_text">High</string>
     <string name="cur_score_text">Score</string>
+    <string name="game_over_text">Game Over</string>
     <string name="title_activity_test">TestActivity</string>
 </resources>

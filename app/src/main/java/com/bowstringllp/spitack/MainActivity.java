@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bowstringllp.spitack.util.SystemUiHider;
@@ -66,12 +66,12 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
     private GameBoard gameBoard;
     private int playerAddFactor = 20;
 
-    private Button playButton;
+    private ImageView playButton;
     private TextView timerText;
     private View timerLayout;
     private View scoreboardLayout;
     private TextView scoreBoardTimerText;
-    private TextView readyText;
+    //    private TextView readyText;
     private CountDownTimer timer;
     private long timeElapsed = 0;
 
@@ -89,6 +89,8 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
     private static List<Integer> countdownValueList = new ArrayList<>();
     private TextView scoreBoardHighText;
     private MixpanelAPI mixpanel;
+    private ImageView leaderboardImage;
+    private ImageView signOutImage;
 
     public static int getNoOfStars() {
         return NUM_OF_STARS;
@@ -108,7 +110,7 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
         mixpanel = MixpanelAPI.getInstance(this, getString(R.string.mixpanel_token));
         setContentView(R.layout.activity_main);
 
-    // Create the Google API Client with access to Plus and Games
+        // Create the Google API Client with access to Plus and Games
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -116,13 +118,15 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
 
-        playButton = (Button) findViewById(R.id.scoreboard_play_button);
+        playButton = (ImageView) findViewById(R.id.scoreboard_play_button);
         timerText = (TextView) findViewById(R.id.timer_text);
         timerLayout = findViewById(R.id.timer_layout);
         scoreboardLayout = findViewById(R.id.scoreboard_layout);
         scoreBoardTimerText = (TextView) findViewById(R.id.scoreboard_cur_score_text);
         scoreBoardHighText = (TextView) findViewById(R.id.scoreboard_high_score_text);
-        readyText = (TextView) findViewById(R.id.ready_text);
+        leaderboardImage = (ImageView) findViewById(R.id.scoreboard_leaderboard_button);
+        signOutImage = (ImageView) findViewById(R.id.scoreboard_siginout_button);
+//        readyText = (TextView) findViewById(R.id.ready_text);
 
         gameBoard = (GameBoard) findViewById(R.id.the_canvas);
 
@@ -133,10 +137,10 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
                 switch (action & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                     case MotionEvent.ACTION_POINTER_DOWN:
-                        if (readyText.getVisibility() == View.VISIBLE) {
-                            initGfx();
-                            readyText.setVisibility(View.GONE);
-                        }
+//                        if (readyText.getVisibility() == View.VISIBLE) {
+//                        initGfx();
+//                            readyText.setVisibility(View.GONE);
+//                        }
 
                         gameBoard.getPlayer().setAddFactor(playerAddFactor * -1);
                         break;
@@ -157,10 +161,10 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
                 switch (action & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                     case MotionEvent.ACTION_POINTER_DOWN:
-                        if (readyText.getVisibility() == View.VISIBLE) {
-                            initGfx();
-                            readyText.setVisibility(View.GONE);
-                        }
+//                        if (readyText.getVisibility() == View.VISIBLE) {
+//                        initGfx();
+//                            readyText.setVisibility(View.GONE);
+//                        }
                         gameBoard.getPlayer().setAddFactor(playerAddFactor);
                         break;
                     case MotionEvent.ACTION_UP:
@@ -184,20 +188,23 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
         mAdView.loadAd(adRequest);
 
         findViewById(R.id.scoreboard_leaderboard_button).setOnClickListener(this);
-        findViewById(R.id.scoreboard_siginin_button).setOnClickListener(this);
         findViewById(R.id.scoreboard_siginout_button).setOnClickListener(this);
         playButton.setOnClickListener(this);
         gameBoard.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (readyText.getVisibility() == View.VISIBLE) {
-                    initGfx();
-                    readyText.setVisibility(View.GONE);
-                } else if (scoreboardLayout.getVisibility() != View.VISIBLE) {
+//                if (readyText.getVisibility() == View.VISIBLE) {
+//                    initGfx();
+//                    readyText.setVisibility(View.GONE);
+//                } else
+
+                if (scoreboardLayout.getVisibility() != View.VISIBLE) {
                     pauseGame();
                 }
             }
         });
+
+        initGfx();
     }
 
 
@@ -208,16 +215,24 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
             isPaused = true;
         }
 
-        playButton.setText(getString(R.string.resume_text));
+        playButton.setImageResource(R.drawable.play);
         timer.cancel();
-        scoreBoardTimerText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+        scoreBoardTimerText.setText("Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
 
         long high = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong(HIGHSCORE, 0);
 
         if (high > timeElapsed)
-            scoreBoardHighText.setText(String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
+            scoreBoardHighText.setText("High Score- " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
         else
-            scoreBoardHighText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+            scoreBoardHighText.setText("High Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            leaderboardImage.setVisibility(View.VISIBLE);
+            signOutImage.setImageResource(R.drawable.controller_filled);
+        } else {
+            leaderboardImage.setVisibility(View.INVISIBLE);
+            signOutImage.setImageResource(R.drawable.controller);
+        }
 
         scoreboardLayout.setVisibility(View.VISIBLE);
     }
@@ -301,23 +316,20 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
 
     @Override
     synchronized public void onClick(View v) {
-        if (v.getId() == R.id.scoreboard_siginin_button) {
-            // start the asynchronous sign in flow
-            mSignInClicked = true;
-            mGoogleApiClient.connect();
-        } else if (v.getId() == R.id.scoreboard_siginout_button) {
+        if (v.getId() == R.id.scoreboard_siginout_button) {
             // sign out.
-            mSignInClicked = false;
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(EXPLICIT_SIGN_OUT, true).commit();
             if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(EXPLICIT_SIGN_OUT, true).commit();
                 Games.signOut(mGoogleApiClient);
                 mGoogleApiClient.disconnect();
-            }
 
-            // show sign-in button, hide the sign-out button
-            findViewById(R.id.scoreboard_leaderboard_button).setVisibility(View.INVISIBLE);
-            findViewById(R.id.scoreboard_siginin_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.scoreboard_siginout_button).setVisibility(View.INVISIBLE);
+                // show sign-in button, hide the sign-out button
+                leaderboardImage.setVisibility(View.INVISIBLE);
+                signOutImage.setImageResource(R.drawable.controller);
+            } else if (mGoogleApiClient != null) {
+                mSignInClicked = true;
+                mGoogleApiClient.connect();
+            }
         } else if (v.getId() == R.id.scoreboard_play_button) {
             synchronized (lock) {
                 if (isPaused) {
@@ -341,27 +353,31 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
             }
 
             if (gameBoard.isCollisionDetected()) {
-                playButton.setText(getString(R.string.replay_text));
+                playButton.setImageResource(R.drawable.replay);
                 timerLayout.setVisibility(View.INVISIBLE);
                 timer.cancel();
+
                 scoreboardLayout.setVisibility(View.VISIBLE);
                 mAdView.setVisibility(View.VISIBLE);
-                scoreBoardTimerText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+                scoreBoardTimerText.setText("Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
 
                 long high = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong(HIGHSCORE, 0);
 
                 if (high > timeElapsed)
-                    scoreBoardHighText.setText(String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
+                    scoreBoardHighText.setText("High Score- " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
                 else
-                    scoreBoardHighText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+                    scoreBoardHighText.setText("High Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
 
                 if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                    leaderboardImage.setVisibility(View.VISIBLE);
+                    signOutImage.setImageResource(R.drawable.controller_filled);
+
                     Games.Leaderboards.submitScoreImmediate(mGoogleApiClient, getString(R.string.leaderboard_best_time), timeElapsed * 1000).setResultCallback(new ResolvingResultCallbacks<SubmitScoreResult>(MainActivity.this, REQUEST_LEADERBOARD) {
                         @Override
                         public void onSuccess(SubmitScoreResult submitScoreResult) {
                             long high = submitScoreResult.getScoreData().getScoreResult(
                                     LeaderboardVariant.TIME_SPAN_ALL_TIME).rawScore / 1000;
-                            scoreBoardHighText.setText(String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
+                            scoreBoardHighText.setText("High Score- " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
 
                             PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putLong(HIGHSCORE, high).commit();
                         }
@@ -373,6 +389,8 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
                         }
                     });
                 } else {
+                    leaderboardImage.setVisibility(View.INVISIBLE);
+                    signOutImage.setImageResource(R.drawable.controller);
                     if (high < timeElapsed)
                         PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putLong(HIGHSCORE, timeElapsed).commit();
                 }
@@ -403,13 +421,12 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
     @Override
     public void onConnected(Bundle bundle) {
         // show sign-out button, hide the sign-in button
-        findViewById(R.id.scoreboard_siginin_button).setVisibility(View.INVISIBLE);
-        findViewById(R.id.scoreboard_leaderboard_button).setVisibility(View.VISIBLE);
-        findViewById(R.id.scoreboard_siginout_button).setVisibility(View.VISIBLE);
+        leaderboardImage.setVisibility(View.VISIBLE);
+        signOutImage.setImageResource(R.drawable.controller_filled);
         PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(EXPLICIT_SIGN_OUT, false).commit();
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(IS_FIRST_CONNECTION, true)) {
             loadScoreOfLeaderBoard();
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(IS_FIRST_CONNECTION, false).commit();
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(IS_FIRST_CONNECTION, false).apply();
         }
         // (your code here: update UI, enable functionality that depends on sign in, etc)
 
@@ -423,7 +440,7 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
                     if (isScoreResultValid(scoreResult)) {
                         // here you can get the score like this
                         long high = scoreResult.getScore().getRawScore() / 1000;
-                        scoreBoardHighText.setText(String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
+                        scoreBoardHighText.setText("High Score- " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
                         PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putLong(HIGHSCORE, scoreResult.getScore().getRawScore() / 1000).commit();
                     }
                 }
