@@ -1,9 +1,12 @@
-package com.bowstringllp.spitack.util;
+package com.bowstringllp.spitack.ui.view;
+
 
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
+import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.WindowManager;
 
 /**
@@ -11,7 +14,7 @@ import android.view.WindowManager;
  * Honeycomb and later (specifically {@link View#setSystemUiVisibility(int)}) to
  * show and hide the system UI.
  */
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+@TargetApi(VERSION_CODES.HONEYCOMB)
 public class SystemUiHiderHoneycomb extends SystemUiHiderBase {
     /**
      * Flags for {@link View#setSystemUiVisibility(int)} to use when showing the
@@ -27,14 +30,14 @@ public class SystemUiHiderHoneycomb extends SystemUiHiderBase {
 
     /**
      * Flags to test against the first parameter in
-     * {@link android.view.View.OnSystemUiVisibilityChangeListener#onSystemUiVisibilityChange(int)}
+     * {@link OnSystemUiVisibilityChangeListener#onSystemUiVisibilityChange(int)}
      * to determine the system UI visibility state.
      */
     private int mTestFlags;
 
     /**
      * Whether or not the system UI is currently visible. This is cached from
-     * {@link android.view.View.OnSystemUiVisibilityChangeListener}.
+     * {@link OnSystemUiVisibilityChangeListener}.
      */
     private boolean mVisible = true;
 
@@ -100,13 +103,13 @@ public class SystemUiHiderHoneycomb extends SystemUiHiderBase {
         return mVisible;
     }
 
-    private View.OnSystemUiVisibilityChangeListener mSystemUiVisibilityChangeListener
-            = new View.OnSystemUiVisibilityChangeListener() {
+    private OnSystemUiVisibilityChangeListener mSystemUiVisibilityChangeListener
+            = new OnSystemUiVisibilityChangeListener() {
         @Override
         public void onSystemUiVisibilityChange(int vis) {
             // Test against mTestFlags to see if the system UI is visible.
             if ((vis & mTestFlags) != 0) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                if (Build.VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN) {
                     // Pre-Jelly Bean, we must manually hide the action bar
                     // and use the old window flags API.
                     mActivity.getActionBar().hide();
@@ -122,7 +125,7 @@ public class SystemUiHiderHoneycomb extends SystemUiHiderBase {
 
             } else {
                 mAnchorView.setSystemUiVisibility(mShowFlags);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                if (Build.VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN) {
                     // Pre-Jelly Bean, we must manually show the action bar
                     // and use the old window flags API.
                     mActivity.getActionBar().show();

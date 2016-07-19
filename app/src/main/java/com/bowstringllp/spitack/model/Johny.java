@@ -1,4 +1,4 @@
-package com.bowstringllp.spitack;
+package com.bowstringllp.spitack.model;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,11 +10,13 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.bowstringllp.spitack.R;
+
 /**
  * TODO: document your custom view class.
  */
 public class Johny extends View {
-    private String mExampleString; // TODO: use a default from R.string...
+    private String mExampleString; // TODO: use a default from R.thread_bit...
     private int mExampleColor = Color.RED; // TODO: use a default from R.color...
     private float mExampleDimension = 0; // TODO: use a default from R.dimen...
     private Drawable mExampleDrawable;
@@ -109,19 +111,19 @@ public class Johny extends View {
     }
 
     /**
-     * Gets the example string attribute value.
+     * Gets the example thread_bit attribute value.
      *
-     * @return The example string attribute value.
+     * @return The example thread_bit attribute value.
      */
     public String getExampleString() {
         return mExampleString;
     }
 
     /**
-     * Sets the view's example string attribute value. In the example view, this string
+     * Sets the view's example thread_bit attribute value. In the example view, this thread_bit
      * is the text to draw.
      *
-     * @param exampleString The example string attribute value to use.
+     * @param exampleString The example thread_bit attribute value to use.
      */
     public void setExampleString(String exampleString) {
         mExampleString = exampleString;

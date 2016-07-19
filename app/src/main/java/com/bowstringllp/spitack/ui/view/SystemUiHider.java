@@ -1,7 +1,8 @@
-package com.bowstringllp.spitack.util;
+package com.bowstringllp.spitack.ui.view;
 
 import android.app.Activity;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 /**
@@ -20,7 +21,7 @@ import android.view.View;
  * "http://developer.android.com/design/get-started/ui-overview.html#system-bars"
  * > System Bars</a>.
  *
- * @see android.view.View#setSystemUiVisibility(int)
+ * @see View#setSystemUiVisibility(int)
  * @see android.view.WindowManager.LayoutParams#FLAG_FULLSCREEN
  */
 public abstract class SystemUiHider {
@@ -92,7 +93,7 @@ public abstract class SystemUiHider {
      *                   {@link #FLAG_LAYOUT_IN_SCREEN_OLDER_DEVICES}.
      */
     public static SystemUiHider getInstance(Activity activity, View anchorView, int flags) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
             return new SystemUiHiderHoneycomb(activity, anchorView, flags);
         } else {
             return new SystemUiHiderBase(activity, anchorView, flags);

@@ -1,4 +1,4 @@
-package com.bowstringllp.spitack.util;
+package com.bowstringllp.spitack.ui.view;
 
 import android.content.Context;
 import android.graphics.Matrix;

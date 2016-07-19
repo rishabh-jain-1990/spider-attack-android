@@ -1,4 +1,4 @@
-package com.bowstringllp.spitack.util;
+package com.bowstringllp.spitack.ui.view;
 
 import android.app.Activity;
 import android.view.View;

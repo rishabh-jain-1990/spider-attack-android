@@ -1,10 +1,12 @@
-package com.bowstringllp.spitack;
+package com.bowstringllp.spitack.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import com.bowstringllp.spitack.R;
 
 public class SplashActivity extends Activity {
 

@@ -1,11 +1,19 @@
-package com.bowstringllp.spitack;
+package com.bowstringllp.spitack.model;
 
+import android.graphics.Bitmap;
 import android.os.CountDownTimer;
+
+import com.bowstringllp.spitack.MyApplication;
+import com.bowstringllp.spitack.ui.activity.MainActivity;
+import com.bowstringllp.spitack.util.Constants;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by rishabhjain on 12/24/15.
  */
-public class Bar {
+public class Spider {
     private int countdown;
     private int xStart;
     private int xEnd;
@@ -19,7 +27,19 @@ public class Bar {
     private int yTurning;
     private int addFactor = 10;
 
-    public Bar() {
+    @Inject
+    @Named(Constants.SPIDER_BITMAP)
+    protected Bitmap[] bitmap;
+
+    private int currentBitmapIndex;
+    private final int FRAME_RATE = 3;
+    private int currentFrame = 0;
+
+    public Spider() {
+
+        MyApplication.getInstance().getNetComponent().inject(this);
+        currentBitmapIndex = 0;
+
         countdown = MainActivity.getCountdownValue();
 
         new CountDownTimer(countdown * 800, 100) {
@@ -30,7 +50,7 @@ public class Bar {
             }
 
             @Override
-            public synchronized   void onFinish() {
+            public synchronized void onFinish() {
                 countdown = 0;
             }
         }.start();
@@ -83,5 +103,34 @@ public class Bar {
 
     public void setyTurning(int yTurning) {
         this.yTurning = yTurning;
+    }
+
+    public Bitmap getCurrentBitmap() {
+        return bitmap[currentBitmapIndex];
+    }
+
+    public void nextBitmap() {
+
+//        if (currentFrame < FRAME_RATE)
+//            currentFrame++;
+//        else {
+        currentFrame = 0;
+        currentBitmapIndex++;
+
+        if (currentBitmapIndex > 23)
+            currentBitmapIndex = 0;
+//        }
+    }
+
+    public void previousBitmap() {
+//        if (currentFrame < FRAME_RATE)
+//            currentFrame++;
+//        else {
+        currentFrame = 0;
+        currentBitmapIndex--;
+
+        if (currentBitmapIndex < 0)
+            currentBitmapIndex = 23;
+//        }
     }
 }

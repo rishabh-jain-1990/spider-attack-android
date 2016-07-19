@@ -1,4 +1,4 @@
-package com.bowstringllp.spitack;
+package com.bowstringllp.spitack.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,7 +14,9 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bowstringllp.spitack.util.SystemUiHider;
+import com.bowstringllp.spitack.R;
+import com.bowstringllp.spitack.ui.view.GameBoard;
+import com.bowstringllp.spitack.ui.view.SystemUiHider;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
@@ -62,7 +64,7 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
     private static final int NUM_OF_STARS = 10;
     private Handler frame = new Handler();
     //Divide the frame by 1000 to calculate how many times per second the screen will update.
-    private static final int FRAME_RATE = 20; //50 frames per second
+    private static final int FRAME_RATE = 25; //50 frames per second
     private GameBoard gameBoard;
     private int playerAddFactor = 20;
 
@@ -142,12 +144,12 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
 //                            readyText.setVisibility(View.GONE);
 //                        }
 
-                        gameBoard.getPlayer().setAddFactor(playerAddFactor * -1);
+                        gameBoard.getBee().setAddFactor(playerAddFactor * -1);
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_POINTER_UP:
-                        if (gameBoard.getPlayer().getAddFactor() <= 0)
-                            gameBoard.getPlayer().setAddFactor(0);
+                        if (gameBoard.getBee().getAddFactor() <= 0)
+                            gameBoard.getBee().setAddFactor(0);
                         break;
                 }
                 return true;
@@ -165,12 +167,12 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
 //                        initGfx();
 //                            readyText.setVisibility(View.GONE);
 //                        }
-                        gameBoard.getPlayer().setAddFactor(playerAddFactor);
+                        gameBoard.getBee().setAddFactor(playerAddFactor);
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_POINTER_UP:
-                        if (gameBoard.getPlayer().getAddFactor() >= 0)
-                            gameBoard.getPlayer().setAddFactor(0);
+                        if (gameBoard.getBee().getAddFactor() >= 0)
+                            gameBoard.getBee().setAddFactor(0);
                         break;
                 }
                 return true;
@@ -180,7 +182,7 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
         mAdView = (AdView) findViewById(R.id.adView);
         //  AdRequest adRequest = new AdRequest.Builder().build();
         //  mAdView.setAdSize(AdSize.SMART_BANNER);
-        // mAdView.setAdUnitId(getString(R.string.banner_ad_unit_id_test));
+        // mAdView.setAdUnitId(getString(R.thread_bit.banner_ad_unit_id_test));
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
                 .addTestDevice("58A3D42C750DA991B6399A4591CD3793")  // An example device ID
@@ -472,8 +474,8 @@ public class MainActivity extends Activity implements OnClickListener, GoogleApi
             mResolvingConnectionFailure = true;
 
             // Attempt to resolve the connection failure using BaseGameUtils.
-            // The R.string.signin_other_error value should reference a generic
-            // error string in your strings.xml file, such as "There was
+            // The R.thread_bit.signin_other_error value should reference a generic
+            // error thread_bit in your strings.xml file, such as "There was
             // an issue with sign in, please try again later."
             if (!BaseGameUtils.resolveConnectionFailure(this,
                     mGoogleApiClient, connectionResult,

@@ -8,7 +8,7 @@
     android:background="@color/black_translucent"
     android:padding="10dp">
 
-    <com.bowstringllp.spitack.util.CustomFontTextView
+    <com.bowstringllp.spitack.ui.view.CustomFontTextView
         android:id="@+id/game_over_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:textColor="@android:color/white"
         android:textSize="41sp"/>
 
-    <com.bowstringllp.spitack.util.CustomFontTextView
+    <com.bowstringllp.spitack.ui.view.CustomFontTextView
         android:id="@+id/scoreboard_cur_score_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:textColor="@android:color/white"
         android:textSize="31sp"/>
 
-    <com.bowstringllp.spitack.util.CustomFontTextView
+    <com.bowstringllp.spitack.ui.view.CustomFontTextView
         android:id="@+id/scoreboard_high_score_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
