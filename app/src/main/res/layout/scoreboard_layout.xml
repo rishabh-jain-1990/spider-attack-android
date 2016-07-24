@@ -8,7 +8,7 @@
     android:background="@color/black_translucent"
     android:padding="10dp">
 
-    <com.bowstringllp.spitack.ui.view.CustomFontTextView
+    <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
         android:id="@+id/game_over_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:textColor="@android:color/white"
         android:textSize="41sp"/>
 
-    <com.bowstringllp.spitack.ui.view.CustomFontTextView
+    <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
         android:id="@+id/scoreboard_cur_score_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:textColor="@android:color/white"
         android:textSize="31sp"/>
 
-    <com.bowstringllp.spitack.ui.view.CustomFontTextView
+    <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
         android:id="@+id/scoreboard_high_score_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
         android:src="@drawable/replay"/>
 
     <ImageView
-        android:id="@+id/scoreboard_siginout_button"
+        android:id="@+id/scoreboard_signout_button"
         android:layout_width="45dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/scoreboard_high_score_text"
@@ -73,6 +73,19 @@
         android:scaleType="fitStart"
         android:src="@drawable/controller"/>
 
+    <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
+        android:id="@+id/scoreboard_signout_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/scoreboard_signout_button"
+        android:layout_alignRight="@id/scoreboard_signout_button"
+        android:layout_below="@id/scoreboard_signout_button"
+        android:gravity="center"
+        android:text="Sign Out"
+        android:layout_marginTop="5dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"/>
+
     <ImageView
         android:id="@+id/scoreboard_leaderboard_button"
         android:layout_width="45dp"
@@ -81,13 +94,26 @@
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="15dp"
-        android:layout_toEndOf="@id/scoreboard_siginout_button"
-        android:layout_toRightOf="@id/scoreboard_siginout_button"
+        android:layout_toEndOf="@id/scoreboard_signout_button"
+        android:layout_toRightOf="@id/scoreboard_signout_button"
         android:adjustViewBounds="true"
         android:background="@drawable/background_round_black_translucent"
         android:padding="15dp"
         android:scaleType="fitStart"
         android:src="@drawable/leaderboard"/>
+
+    <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
+        android:id="@+id/scoreboard_leaderboard_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/scoreboard_leaderboard_button"
+        android:layout_alignRight="@id/scoreboard_leaderboard_button"
+        android:layout_below="@id/scoreboard_leaderboard_button"
+        android:gravity="center"
+        android:text="Leaderboard"
+        android:layout_marginTop="5dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"/>
 
     <ImageView
         android:id="@+id/scoreboard_rate_button"
@@ -105,6 +131,19 @@
         android:scaleType="fitStart"
         android:src="@drawable/rate"/>
 
+    <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
+        android:id="@+id/scoreboard_rate_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/scoreboard_rate_button"
+        android:layout_alignRight="@id/scoreboard_rate_button"
+        android:layout_below="@id/scoreboard_rate_button"
+        android:gravity="center"
+        android:text="Rate"
+        android:layout_marginTop="5dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"/>
+
     <ImageView
         android:id="@+id/scoreboard_share_button"
         android:layout_width="45dp"
@@ -120,4 +159,17 @@
         android:padding="15dp"
         android:scaleType="fitStart"
         android:src="@drawable/share"/>
+
+    <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
+        android:id="@+id/scoreboard_share_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/scoreboard_share_button"
+        android:layout_alignRight="@id/scoreboard_share_button"
+        android:layout_below="@id/scoreboard_share_button"
+        android:gravity="center"
+        android:text="Share"
+        android:layout_marginTop="5dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"/>
 </android.support.percent.PercentRelativeLayout>

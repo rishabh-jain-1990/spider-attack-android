@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Spitack</string>
+    <string name="app_name">Spider Attack</string>
     <string name="signin_other_error">There was an issue with sign in, please try again later</string>
     <string name="banner_ad_unit_id_test">ca-app-pub-3940256099942544/6300978111</string>
     <string name="banner_ad_unit_id">ca-app-pub-2664199394997863/7792351431</string>
@@ -17,4 +17,7 @@
     <string name="cur_score_text">Score</string>
     <string name="game_over_text">Game Over</string>
     <string name="title_activity_test">TestActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

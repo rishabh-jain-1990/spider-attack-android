@@ -2,16 +2,16 @@
   "project_info": {
     "project_id": "run-johnny-79630241",
     "project_number": "68660848152",
-    "name": "Run Johnny"
+    "name": "Spider Attack"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:68660848152:android:cb6884e6ebb72a30",
-        "client_id": "android:com.bowstringllp.runjohny",
+        "client_id": "android:com.bowstringllp.spiderattack",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "com.bowstringllp.runjohny"
+          "package_name": "com.bowstringllp.spiderattack"
         }
       },
       "oauth_client": [
@@ -19,7 +19,7 @@
           "client_id": "68660848152-8o50gnbtht7cimv5fan5udgjvqpvnb4n.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.bowstringllp.runjohny",
+            "package_name": "com.bowstringllp.spiderattack",
             "certificate_hash": "222382C74CE49CA31E66099AA5D350F328C0A454"
           }
         }
