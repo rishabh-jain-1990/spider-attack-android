@@ -13,7 +13,7 @@ import android.view.View;
 import com.bowstringllp.spiderattack.R;
 import com.bowstringllp.spiderattack.model.Bee;
 import com.bowstringllp.spiderattack.model.Spider;
-import com.bowstringllp.spiderattack.ui.activity.MainActivity;
+import com.bowstringllp.spiderattack.ui.GameFragment;
 
 import java.util.Random;
 
@@ -46,12 +46,16 @@ public class GameBoard extends View {
         return bee;
     }
 
+    public Spider[] getSpiderArray() {
+        return spiderArray;
+    }
+
     public GameBoard(Context context, AttributeSet aSet) {
         super(context, aSet);
         //it's best not to create any new objects in the on draw
         //initialize them as class variables here
         p = new Paint();
-        NUM_OF_STARS = MainActivity.getNoOfStars();
+        NUM_OF_STARS = GameFragment.getNoOfStars();
         spiderArray = new Spider[NUM_OF_STARS];
         threadImage = (NinePatchDrawable) getResources().getDrawable(R.drawable.thread);
         //       threadImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.thread_bit);

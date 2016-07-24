@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.os.CountDownTimer;
 
 import com.bowstringllp.spiderattack.MyApplication;
-import com.bowstringllp.spiderattack.ui.activity.MainActivity;
+import com.bowstringllp.spiderattack.ui.GameFragment;
 import com.bowstringllp.spiderattack.util.Constants;
 
 import javax.inject.Inject;
@@ -34,18 +34,20 @@ public class Spider {
     private final int FRAME_RATE = 3;
     private int currentFrame = 0;
 
+    private CountDownTimer timer;
+
     public Spider() {
 
         MyApplication.getInstance().getNetComponent().inject(this);
         currentBitmapIndex = 0;
 
-        countdown = MainActivity.getCountdownValue();
+        countdown = GameFragment.getCountdownValue() * 800;
 
-        new CountDownTimer(countdown * 800, 100) {
+        timer = new CountDownTimer(countdown * 800, 100) {
 
             @Override
             public void onTick(long millisUntilFinished) {
-
+                countdown -= 100;
             }
 
             @Override
@@ -123,5 +125,24 @@ public class Spider {
         if (currentBitmapIndex < 0)
             currentBitmapIndex = 23;
 //        }
+    }
+
+    public void pause() {
+        timer.cancel();
+    }
+
+    public void unPause() {
+        timer = new CountDownTimer(countdown * 800, 100) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                countdown -= 100;
+            }
+
+            @Override
+            public synchronized void onFinish() {
+                countdown = 0;
+            }
+        }.start();
     }
 }

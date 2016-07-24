@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 
 import com.bowstringllp.spiderattack.R;
 import com.bowstringllp.spiderattack.util.Constants;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import java.text.SimpleDateFormat;
 
@@ -30,6 +31,12 @@ public class NetModule {
     // Application reference must come from AppModule.class
     SharedPreferences providesSharedPreferences(Application application) {
         return PreferenceManager.getDefaultSharedPreferences(application);
+    }
+
+    @Provides
+    @Singleton
+    MixpanelAPI provideMixPanelInstance(Application application) {
+        return MixpanelAPI.getInstance(application, application.getString(R.string.mixpanel_token));
     }
 
     @Provides

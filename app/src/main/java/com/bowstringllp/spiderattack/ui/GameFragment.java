@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +19,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bowstringllp.spiderattack.MyApplication;
 import com.bowstringllp.spiderattack.R;
+import com.bowstringllp.spiderattack.events.ActionEvent;
+import com.bowstringllp.spiderattack.events.ActionEvent.EventType;
+import com.bowstringllp.spiderattack.model.Spider;
 import com.bowstringllp.spiderattack.ui.view.GameBoard;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
@@ -41,6 +46,9 @@ import com.google.android.gms.plus.Plus;
 import com.google.example.games.basegameutils.BaseGameUtils;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,6 +56,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,6 +72,10 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
     private Handler frame = new Handler();
     //Divide the frame by 1000 to calculate how many times per second the screen will update.
     private static final int FRAME_RATE = 25; //50 frames per second
+
+    @Inject
+    MixpanelAPI mixpanel;
+
     private GameBoard gameBoard;
     private int playerAddFactor = 20;
 
@@ -87,7 +101,6 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
     private AdView mAdView;
     private static List<Integer> countdownValueList = new ArrayList<>();
     private TextView scoreBoardHighText;
-    private MixpanelAPI mixpanel;
     private ImageView leaderboardImage;
     private TextView leaderboardText;
     private ImageView signOutImage;
@@ -101,6 +114,11 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MyApplication.getInstance().getNetComponent().inject(this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -206,8 +224,6 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
             }
         });
 
-        initGfx();
-
         return view;
     }
 
@@ -219,7 +235,10 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
         }
 
         playButton.setImageResource(R.drawable.play);
-        timer.cancel();
+
+        if (timer != null)
+            timer.cancel();
+
         scoreBoardTimerText.setText("Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
 
         long high = PreferenceManager.getDefaultSharedPreferences(getContext()).getLong(HIGHSCORE, 0);
@@ -242,6 +261,11 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
         }
 
         scoreboardLayout.setVisibility(View.VISIBLE);
+
+        if (gameBoard != null && gameBoard.getSpiderArray() != null)
+            for (Spider s : gameBoard.getSpiderArray())
+                if (s != null)
+                    s.pause();
     }
 
     private void unPauseGame() {
@@ -267,6 +291,11 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
 
         scoreboardLayout.setVisibility(View.GONE);
 
+        if (gameBoard != null && gameBoard.getSpiderArray() != null)
+            for (Spider s : gameBoard.getSpiderArray())
+                if (s != null)
+                    s.unPause();
+
         frame.removeCallbacks(frameUpdate);
         //make any updates to on screen objects here
         //then invoke the on draw by invalidating the canvas
@@ -281,6 +310,7 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
             Log.d(TAG, "onStart(): connecting");
             mGoogleApiClient.connect();
         }
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -290,6 +320,7 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+        EventBus.getDefault().unregister(this);
     }
 
     synchronized public void initGfx() {
@@ -539,5 +570,17 @@ public class GameFragment extends Fragment implements OnClickListener, GoogleApi
             }
         }
         return countdownValueList.remove(0);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onActionEvent(ActionEvent event) {
+        if (event.getAuthor().equalsIgnoreCase(this.getClass().getName()))
+            return;
+
+        EventBus.getDefault().removeStickyEvent(ActionEvent.class);
+        if (event.getEventType() == EventType.START_GAME) {
+            initGfx();
+        }
+
     }
 }

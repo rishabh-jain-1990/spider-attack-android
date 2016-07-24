@@ -6,6 +6,7 @@ import com.bowstringllp.spiderattack.model.Bee;
 import com.bowstringllp.spiderattack.model.Spider;
 import com.bowstringllp.spiderattack.modules.AppModule;
 import com.bowstringllp.spiderattack.modules.NetModule;
+import com.bowstringllp.spiderattack.ui.GameFragment;
 
 import javax.inject.Singleton;
 
@@ -19,4 +20,6 @@ public interface NetComponent {
     void inject(Spider spider);
 
     void inject(Bee bee);
+
+    void inject(GameFragment gameFragment);
 }

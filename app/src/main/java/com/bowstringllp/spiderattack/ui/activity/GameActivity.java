@@ -6,37 +6,51 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.bowstringllp.spiderattack.R;
-import com.bowstringllp.spiderattack.ui.GameFragment;
-import com.bowstringllp.spiderattack.ui.SplashFragment;
+import com.bowstringllp.spiderattack.events.ActionEvent;
+import com.bowstringllp.spiderattack.events.ActionEvent.EventType;
 import com.crashlytics.android.Crashlytics;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import io.fabric.sdk.android.Fabric;
 
 public class GameActivity extends AppCompatActivity {
 
-    private MixpanelAPI mixpanel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_game);
         final Fabric fabric = new Fabric.Builder(this)
                 .kits(new Crashlytics())
                 .debuggable(true)
                 .build();
         Fabric.with(fabric);
-
-        mixpanel = MixpanelAPI.getInstance(this, getString(R.string.mixpanel_token));
-
-        getSupportFragmentManager().beginTransaction().add(R.id.frame_container, new GameFragment()).commit();
-        getSupportFragmentManager().beginTransaction().add(R.id.frame_container, new SplashFragment()).addToBackStack(SplashFragment.class.getName()).commit();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+
     public void showGameView() {
-        getSupportFragmentManager().popBackStackImmediate();
     }
 
     @Override
@@ -48,6 +62,19 @@ public class GameActivity extends AppCompatActivity {
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(str);
         if (fragment != null) {
             fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onActionEvent(ActionEvent event) {
+        if (event.getAuthor().equalsIgnoreCase(this.getClass().getName()))
+            return;
+
+        if(event.getEventType() == EventType.SHOW_GAME)
+        {
+            EventBus.getDefault().postSticky(new ActionEvent(this.getClass().getName(), EventType.START_GAME));
+            findViewById(R.id.splash_fragment).setVisibility(View.GONE);
+            findViewById(R.id.game_fragment).setVisibility(View.VISIBLE);
         }
     }
 

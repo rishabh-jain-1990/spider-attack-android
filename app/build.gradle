@@ -20,8 +20,7 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
-
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.bowstringllp.spiderattack"
@@ -49,8 +48,10 @@ dependencies {
 
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.google.android.gms:play-services:9.2.0'
-    compile 'com.android.support:percent:23.1.0'
+    compile 'com.google.android.gms:play-services-games:9.2.0'
+    compile 'com.google.android.gms:play-services-ads:9.2.0'
+    compile 'com.android.support:percent:23.4.0'
     compile 'com.google.dagger:dagger:2.5'
+    compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.mixpanel.android:mixpanel-android:4.6.4'
 }

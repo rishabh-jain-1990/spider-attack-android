@@ -9,7 +9,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.bowstringllp.spiderattack.R;
-import com.bowstringllp.spiderattack.ui.activity.GameActivity;
+import com.bowstringllp.spiderattack.events.ActionEvent;
+import com.bowstringllp.spiderattack.events.ActionEvent.EventType;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,7 +41,7 @@ public class SplashFragment extends Fragment {
         view.findViewById(R.id.play_image).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((GameActivity) getActivity()).showGameView();
+                EventBus.getDefault().post(new ActionEvent(getClass().getName(), EventType.SHOW_GAME));
             }
         });
 
