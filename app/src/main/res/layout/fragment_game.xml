@@ -1,11 +1,9 @@
 <android.support.percent.PercentRelativeLayout xmlns:ads="http://schemas.android.com/apk/res-auto"
                                                xmlns:android="http://schemas.android.com/apk/res/android"
                                                xmlns:app="http://schemas.android.com/apk/res-auto"
-                                               xmlns:tools="http://schemas.android.com/tools"
                                                android:layout_width="match_parent"
                                                android:layout_height="match_parent"
-                                               android:background="@android:color/black"
-                                               tools:context=".ui.activity.MainActivity">
+                                               android:background="@android:color/black">
 
     <LinearLayout
         android:id="@+id/button_layout"

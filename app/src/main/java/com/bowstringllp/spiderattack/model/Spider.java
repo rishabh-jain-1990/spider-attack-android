@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.os.CountDownTimer;
 
 import com.bowstringllp.spiderattack.MyApplication;
-import com.bowstringllp.spiderattack.ui.GameFragment;
+import com.bowstringllp.spiderattack.ui.activity.GameActivity;
 import com.bowstringllp.spiderattack.util.Constants;
 
 import javax.inject.Inject;
@@ -41,7 +41,7 @@ public class Spider {
         MyApplication.getInstance().getNetComponent().inject(this);
         currentBitmapIndex = 0;
 
-        countdown = GameFragment.getCountdownValue() * 800;
+        countdown = GameActivity.getCountdownValue() * 800;
 
         timer = new CountDownTimer(countdown * 800, 100) {
 

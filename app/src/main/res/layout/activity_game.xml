@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/game_fragment"
-        android:name="com.bowstringllp.spiderattack.ui.GameFragment"
-        android:layout_width="match_parent"
-        android:visibility="gone"
-        android:layout_height="match_parent"/>
+    <include
+        layout="@layout/fragment_game"
+        android:id="@+id/layout_fragment_game"/>
 
-    <fragment
-        android:id="@+id/splash_fragment"
-        android:name="com.bowstringllp.spiderattack.ui.SplashFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <include
+        android:id="@+id/layout_fragment_splash"
+        android:clickable="true"
+        layout="@layout/fragment_splash"/>
 </RelativeLayout>
