@@ -1,15 +1,14 @@
 {
   "project_info": {
-    "project_id": "run-johnny-79630241",
     "project_number": "68660848152",
-    "name": "Spider Attack"
+    "firebase_url": "https://run-johnny-79630241.firebaseio.com",
+    "project_id": "run-johnny-79630241",
+    "storage_bucket": "run-johnny-79630241.appspot.com"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:68660848152:android:cb6884e6ebb72a30",
-        "client_id": "android:com.bowstringllp.spiderattack",
-        "client_type": 1,
         "android_client_info": {
           "package_name": "com.bowstringllp.spiderattack"
         }
@@ -22,32 +21,30 @@
             "package_name": "com.bowstringllp.spiderattack",
             "certificate_hash": "222382C74CE49CA31E66099AA5D350F328C0A454"
           }
+        },
+        {
+          "client_id": "68660848152-lrht5u6cjfhk3hjl0oaqni8v74h52c18.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
-      "api_key": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZv98WLZKxIDZnVeLEVOpMYiheUSJLtRc"
+        }
+      ],
       "services": {
         "analytics_service": {
           "status": 1
-        },
-        "cloud_messaging_service": {
-          "status": 1,
-          "apns_config": []
         },
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
         },
-        "google_signin_service": {
-          "status": 2
-        },
         "ads_service": {
-          "status": 2,
-          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
-          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+          "status": 2
         }
       }
     }
   ],
-  "client_info": [],
-  "ARTIFACT_VERSION": "1"
+  "configuration_version": "1"
 }

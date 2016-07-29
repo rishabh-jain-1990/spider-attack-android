@@ -33,7 +33,6 @@ public class GameBoard extends View {
     //   private final Bitmap threadImageBitmap;
     private int barWidth;
     private int yPosition = 5;
-    private int addFactor = 20;
     private int safeBarFirst = 0;
     private int safeBarSecond = 1;
     private Spider[] spiderArray;
@@ -60,7 +59,6 @@ public class GameBoard extends View {
         threadImage = (NinePatchDrawable) getResources().getDrawable(R.drawable.thread);
         //       threadImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.thread_bit);
         //      spiderImage = BitmapFactory.decodeResource(getResources(), R.drawable.spider_00000);
-        bee = new Bee();
         //       spiderImageWidth = spiderImage.getWidth();
         //     spiderImageHeight = spiderImage.getHeight();
 //        playerImageWidth = bee.getCurrentBitmap().getWidth();
@@ -141,6 +139,9 @@ public class GameBoard extends View {
         if (barWidth == 0)
             barWidth = getWidth() / NUM_OF_STARS;
 
+        if (bee == null)
+            bee = new Bee(barWidth / 12);
+
         if (bee.getyEnd() == 0) {
             bee.setyEnd(getHeight());
             bee.setWidth((int) (barWidth / 2.7));
@@ -195,10 +196,11 @@ public class GameBoard extends View {
 
         }
 
-        if ((bee.getxEnd() + bee.getAddFactor()) <= getWidth() && (bee.getxEnd() + bee.getAddFactor()) >= 0) {
+        if ((bee.getxEnd() + bee.getAddFactor()) <= getWidth() && (bee.getxStart() + bee.getAddFactor()) >= 0) {
             bee.setxStart(bee.getxStart() + bee.getAddFactor());
             bee.setxEnd(bee.getxStart() + bee.getWidth());
         }
+
         p.setColor(Color.MAGENTA);
         //draw the stars
         p.setStrokeWidth(bee.getWidth());
@@ -232,7 +234,7 @@ public class GameBoard extends View {
 
     public void reset() {
         spiderArray = new Spider[NUM_OF_STARS];
-        bee = new Bee();
+        bee = new Bee(barWidth / 5);
         collisionDetected = false;
     }
 }

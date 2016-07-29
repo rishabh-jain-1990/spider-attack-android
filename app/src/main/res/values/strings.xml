@@ -11,7 +11,7 @@
     <string name="sign_out_text">Sign Out</string>
     <string name="left_text">Left</string>
     <string name="right_text">Right</string>
-    <string name="time_elapsed_text">SCORE: </string>
+    <string name="time_elapsed_text">SCORE- </string>
     <string name="leaderboard_text">Leaderboard</string>
     <string name="high_score_text">High</string>
     <string name="cur_score_text">Score</string>

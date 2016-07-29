@@ -12,6 +12,7 @@ import javax.inject.Named;
  * Created by rishabhjain on 12/24/15.
  */
 public class Bee {
+    private final int playerAddFactor;
     private int xStart;
     private int xEnd;
     private int width;
@@ -28,9 +29,10 @@ public class Bee {
     private final int FRAME_RATE = 3;
     private int currentFrame = 0;
 
-    public Bee() {
+    public Bee(int playerAddFactor) {
         MyApplication.getInstance().getNetComponent().inject(this);
         currentBitmapIndex = 0;
+        this.playerAddFactor = playerAddFactor;
     }
 
     public int getxStart() {
@@ -56,7 +58,7 @@ public class Bee {
     public void setWidth(int width) {
         this.width = width;
 
-        height = (width * getCurrentBitmap().getHeight()) / getCurrentBitmap().getWidth() ;
+        height = (width * getCurrentBitmap().getHeight()) / getCurrentBitmap().getWidth();
     }
 
     public int getyStart() {
@@ -74,17 +76,14 @@ public class Bee {
     public void setyEnd(int yEnd) {
         this.yEnd = yEnd;
     }
-//
+
+    //
     public int getHeight() {
         return height;
     }
 
     public int getAddFactor() {
         return addFactor;
-    }
-
-    public void setAddFactor(int addFactor) {
-        this.addFactor = addFactor;
     }
 
 //    public Bitmap[] getBitmap() {
@@ -100,11 +99,11 @@ public class Bee {
 //        if (currentFrame < FRAME_RATE)
 //            currentFrame++;
 //        else {
-            currentFrame = 0;
-            currentBitmapIndex++;
+        currentFrame = 0;
+        currentBitmapIndex++;
 
-            if (currentBitmapIndex > 23)
-                currentBitmapIndex = 0;
+        if (currentBitmapIndex > 23)
+            currentBitmapIndex = 0;
 //        }
     }
 
@@ -112,11 +111,23 @@ public class Bee {
 //        if (currentFrame < FRAME_RATE)
 //            currentFrame++;
 //        else {
-            currentFrame = 0;
-            currentBitmapIndex--;
+        currentFrame = 0;
+        currentBitmapIndex--;
 
-            if (currentBitmapIndex < 0)
-                currentBitmapIndex = 23;
+        if (currentBitmapIndex < 0)
+            currentBitmapIndex = 23;
 //        }
+    }
+
+    public void moveLeft() {
+        addFactor = playerAddFactor * -1;
+    }
+
+    public void moveRight() {
+        addFactor = playerAddFactor * 1;
+    }
+
+    public void stopMoving() {
+        addFactor = 0;
     }
 }

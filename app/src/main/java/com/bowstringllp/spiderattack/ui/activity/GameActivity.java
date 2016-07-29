@@ -4,10 +4,14 @@ package com.bowstringllp.spiderattack.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,12 +28,9 @@ import com.bowstringllp.spiderattack.MyApplication;
 import com.bowstringllp.spiderattack.R;
 import com.bowstringllp.spiderattack.model.Spider;
 import com.bowstringllp.spiderattack.ui.view.GameBoard;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
-import com.crashlytics.android.answers.LevelEndEvent;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResolvingResultCallbacks;
@@ -56,8 +57,6 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
-import io.fabric.sdk.android.Fabric;
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -70,7 +69,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     private static final int NUM_OF_STARS = 10;
     private Handler frame = new Handler();
     //Divide the frame by 1000 to calculate how many times per second the screen will update.
-    private static final int FRAME_RATE = 25; //50 frames per second
+    private static final int FRAME_RATE = 25; //40 frames per second
 
     @Inject
     MixpanelAPI mixpanel;
@@ -79,7 +78,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     SharedPreferences preferences;
 
     private GameBoard gameBoard;
-    private int playerAddFactor = 20;
+    private int playerAddFactor;
 
     private ImageView playButton;
     private TextView timerText;
@@ -108,6 +107,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     private TextView leaderboardText;
     private ImageView signOutImage;
     private TextView signOutText;
+    private MediaPlayer mp;
 
     public static int getNoOfStars() {
         return NUM_OF_STARS;
@@ -120,12 +120,6 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        final Fabric fabric = new Fabric.Builder(this)
-                .kits(new Crashlytics())
-                .debuggable(true)
-                .build();
-        Fabric.with(fabric);
 
         setContentView(R.layout.activity_game);
         MyApplication.getInstance().getNetComponent().inject(this);
@@ -142,7 +136,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             public void onClick(View v) {
                 findViewById(R.id.layout_fragment_splash).setVisibility(View.GONE);
                 initGfx();
-             //   findViewById(R.id.layout_fragment_game).setVisibility(View.VISIBLE);
+                //   findViewById(R.id.layout_fragment_game).setVisibility(View.VISIBLE);
             }
         });
 
@@ -181,12 +175,12 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 //                            readyText.setVisibility(GONE);
 //                        }
 
-                        gameBoard.getBee().setAddFactor(playerAddFactor * -1);
+                        gameBoard.getBee().moveLeft();
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_POINTER_UP:
                         if (gameBoard.getBee().getAddFactor() <= 0)
-                            gameBoard.getBee().setAddFactor(0);
+                            gameBoard.getBee().stopMoving();
                         break;
                 }
                 return true;
@@ -204,26 +198,26 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 //                        initGfx();
 //                            readyText.setVisibility(GONE);
 //                        }
-                        gameBoard.getBee().setAddFactor(playerAddFactor);
+                        gameBoard.getBee().moveRight();
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_POINTER_UP:
                         if (gameBoard.getBee().getAddFactor() >= 0)
-                            gameBoard.getBee().setAddFactor(0);
+                            gameBoard.getBee().stopMoving();
                         break;
                 }
                 return true;
             }
         });
 
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-5934924366370104~6193564076");
+
         mAdView = (AdView) findViewById(R.id.adView);
-        //  AdRequest adRequest = new AdRequest.Builder().build();
-        //  mAdView.setAdSize(AdSize.SMART_BANNER);
-        // mAdView.setAdUnitId(getString(R.thread_bit.banner_ad_unit_id_test));
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                .addTestDevice("58A3D42C750DA991B6399A4591CD3793")  // An example device ID
-                .build();
+        AdRequest adRequest = new AdRequest.Builder().build();
+//        AdRequest adRequest = new AdRequest.Builder()
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+//                .addTestDevice("58A3D42C750DA991B6399A4591CD3793")  // An example device ID
+//                .build();
         mAdView.loadAd(adRequest);
 
         leaderboardImage.setOnClickListener(this);
@@ -231,6 +225,11 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         signOutImage.setOnClickListener(this);
         signOutText.setOnClickListener(this);
         playButton.setOnClickListener(this);
+        findViewById(R.id.scoreboard_share_button).setOnClickListener(this);
+        findViewById(R.id.scoreboard_share_text).setOnClickListener(this);
+        findViewById(R.id.scoreboard_rate_button).setOnClickListener(this);
+        findViewById(R.id.scoreboard_rate_text).setOnClickListener(this);
+
         gameBoard.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,17 +268,18 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             scoreBoardHighText.setText("High Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
 
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            leaderboardImage.setVisibility(View.VISIBLE);
-            leaderboardText.setVisibility(View.VISIBLE);
+//            leaderboardImage.setVisibility(View.VISIBLE);
+//            leaderboardText.setVisibility(View.VISIBLE);
             signOutImage.setImageResource(R.drawable.controller_filled);
             signOutText.setText("Sign Out");
         } else {
-            leaderboardImage.setVisibility(View.INVISIBLE);
-            leaderboardText.setVisibility(View.INVISIBLE);
+//            leaderboardImage.setVisibility(View.INVISIBLE);
+//            leaderboardText.setVisibility(View.INVISIBLE);
             signOutImage.setImageResource(R.drawable.controller);
             signOutText.setText("Sign In");
         }
 
+        mAdView.setVisibility(View.VISIBLE);
         scoreboardLayout.setVisibility(View.VISIBLE);
 
         if (gameBoard != null && gameBoard.getSpiderArray() != null)
@@ -309,6 +309,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 
         }.start();
 
+        mAdView.setVisibility(View.GONE);
         scoreboardLayout.setVisibility(View.GONE);
 
         if (gameBoard != null && gameBoard.getSpiderArray() != null)
@@ -330,6 +331,16 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             Log.d(TAG, "onStart(): connecting");
             mGoogleApiClient.connect();
         }
+
+        mp = MediaPlayer.create(this, R.raw.sound_bg);
+        mp.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.start();
+            }
+        });
+
+        mp.start();
     }
 
     @Override
@@ -339,6 +350,13 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+
+        if (mp != null) {
+            mp.reset();
+            mp.release();
+            mp = null;  
+        }
+
     }
 
     synchronized public void initGfx() {
@@ -380,8 +398,8 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                 mGoogleApiClient.disconnect();
 
                 // show sign-in button, hide the sign-out button
-                leaderboardImage.setVisibility(View.INVISIBLE);
-                leaderboardText.setVisibility(View.INVISIBLE);
+//                leaderboardImage.setVisibility(View.INVISIBLE);
+//                leaderboardText.setVisibility(View.INVISIBLE);
                 signOutImage.setImageResource(R.drawable.controller);
                 signOutText.setText("Sign In");
             } else if (mGoogleApiClient != null) {
@@ -399,6 +417,20 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             initGfx();
         } else if (v.getId() == R.id.scoreboard_leaderboard_button || v.getId() == R.id.scoreboard_leaderboard_text) {
             showLeadershipBoard();
+        } else if (v.getId() == R.id.scoreboard_share_button || v.getId() == R.id.scoreboard_share_text) {
+            final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Save poor Johnny from the spiders!!! \nhttps://play.google.com/store/apps/details?id=" + appPackageName);
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
+        } else if (v.getId() == R.id.scoreboard_rate_button || v.getId() == R.id.scoreboard_rate_text) {
+            final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+            }
         }
     }
 
@@ -428,8 +460,8 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                     scoreBoardHighText.setText("High Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
 
                 if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-                    leaderboardImage.setVisibility(View.VISIBLE);
-                    leaderboardText.setVisibility(View.VISIBLE);
+//                    leaderboardImage.setVisibility(View.VISIBLE);
+//                    leaderboardText.setVisibility(View.VISIBLE);
                     signOutImage.setImageResource(R.drawable.controller_filled);
                     signOutText.setText("Sign Out");
 
@@ -450,18 +482,13 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                         }
                     });
                 } else {
-                    leaderboardImage.setVisibility(View.INVISIBLE);
-                    leaderboardText.setVisibility(View.INVISIBLE);
+//                    leaderboardImage.setVisibility(View.INVISIBLE);
+//                    leaderboardText.setVisibility(View.INVISIBLE);
                     signOutImage.setImageResource(R.drawable.controller);
                     signOutText.setText("Sign In");
                     if (high < timeElapsed)
                         preferences.edit().putLong(HIGHSCORE, timeElapsed).commit();
                 }
-
-                Answers.getInstance().logLevelEnd(new LevelEndEvent()
-                        .putScore(timeElapsed));
-                Answers.getInstance().logCustom(new CustomEvent("Score")
-                        .putCustomAttribute("Time Elapsed", timeElapsed));
 
                 try {
                     JSONObject props = new JSONObject();
@@ -484,8 +511,8 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     @Override
     public void onConnected(Bundle bundle) {
         // show sign-out button, hide the sign-in button
-        leaderboardImage.setVisibility(View.VISIBLE);
-        leaderboardText.setVisibility(View.VISIBLE);
+//        leaderboardImage.setVisibility(View.VISIBLE);
+//        leaderboardText.setVisibility(View.VISIBLE);
         signOutImage.setImageResource(R.drawable.controller_filled);
         signOutText.setText("Sign Out");
         preferences.edit().putBoolean(EXPLICIT_SIGN_OUT, false).commit();
@@ -552,7 +579,8 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
                     getString(R.string.leaderboard_best_time)), REQUEST_LEADERBOARD);
-        }
+        } else
+            Snackbar.make(leaderboardText, "Please sign in to view the leaderboard", Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -590,6 +618,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         }
         return countdownValueList.remove(0);
     }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
