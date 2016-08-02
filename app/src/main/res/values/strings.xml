@@ -2,7 +2,7 @@
     <string name="app_name">Spider Attack</string>
     <string name="signin_other_error">There was an issue with sign in, please try again later</string>
     <string name="banner_ad_unit_id_test">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_ad_unit_id">ca-app-pub-2664199394997863/7792351431</string>
+    <string name="banner_ad_unit_id">ca-app-pub-5934924366370104/7670297279</string>
     <string name="mixpanel_token">f3324dff1554582420f2858e546e10d1</string>
     <string name="replay_text">Replay</string>
     <string name="resume_text">Resume</string>

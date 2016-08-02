@@ -99,7 +99,7 @@
         android:layout_above="@id/scoreboard_layout"
         android:visibility="gone"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id_test"/>
+        ads:adUnitId="@string/banner_ad_unit_id"/>
 
     <!--<TextView-->
     <!--android:id="@+id/ready_text"-->
