@@ -8,7 +8,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:68660848152:android:cb6884e6ebb72a30",
+        "mobilesdk_app_id": "1:68660848152:android:011320328338b103",
         "android_client_info": {
           "package_name": "com.bowstringllp.spiderattack"
         }
@@ -37,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "68660848152-lrht5u6cjfhk3hjl0oaqni8v74h52c18.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

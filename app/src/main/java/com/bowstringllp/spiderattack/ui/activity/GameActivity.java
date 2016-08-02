@@ -354,7 +354,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         if (mp != null) {
             mp.reset();
             mp.release();
-            mp = null;  
+            mp = null;
         }
 
     }
