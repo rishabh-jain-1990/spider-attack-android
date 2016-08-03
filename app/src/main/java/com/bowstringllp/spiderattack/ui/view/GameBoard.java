@@ -155,7 +155,7 @@ public class GameBoard extends View {
 
         for (int i = 0; i < NUM_OF_STARS; i++) {
             if (spiderArray[i] == null)
-                spiderArray[i] = new Spider();
+                spiderArray[i] = new Spider(barWidth / 12);
 
             if (measuredSpiderHeight == 0)
                 measuredSpiderHeight = (barWidth * spiderArray[i].getCurrentBitmap().getHeight()) / spiderArray[i].getCurrentBitmap().getWidth();
@@ -169,10 +169,10 @@ public class GameBoard extends View {
             }
 
             if (spiderArray[i].getyEnd() >= getHeight()) {
-                spiderArray[i].setAddFactor(spiderArray[i].getAddFactor() * -1);
+                spiderArray[i].moveUp();
                 spiderArray[i].setyTurning(measuredSpiderHeight + new Random().nextInt((getHeight() / 2) - measuredSpiderHeight));
             } else if (spiderArray[i].getyEnd() <= spiderArray[i].getyTurning()) {
-                spiderArray[i].setAddFactor(spiderArray[i].getAddFactor() * -1);
+                spiderArray[i].moveDown();
 //                safeBarFirst = new Random().nextInt(NUM_OF_STARS);
 //                do {
 //                    safeBarSecond = new Random().nextInt(NUM_OF_STARS);

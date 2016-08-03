@@ -124,7 +124,7 @@ public class Bee {
     }
 
     public void moveRight() {
-        addFactor = playerAddFactor * 1;
+        addFactor = playerAddFactor;
     }
 
     public void stopMoving() {

@@ -65,7 +65,7 @@
         android:layout_below="@id/splash_spider_right"
         android:layout_centerHorizontal="true"
         android:adjustViewBounds="true"
-        android:scaleType="fitStart"
+        android:scaleType="fitCenter"
         android:src="@drawable/spider_attack_logo"/>
 
     <View

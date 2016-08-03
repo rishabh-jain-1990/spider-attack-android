@@ -14,6 +14,7 @@ import javax.inject.Named;
  * Created by rishabhjain on 12/24/15.
  */
 public class Spider {
+    private final int spiderAddFactor;
     private int countdown;
     private int xStart;
     private int xEnd;
@@ -24,7 +25,7 @@ public class Spider {
     }
 
     private int yTurning;
-    private int addFactor = 10;
+    private int addFactor;
 
     @Inject
     @Named(Constants.SPIDER_BITMAP)
@@ -36,11 +37,12 @@ public class Spider {
 
     private CountDownTimer timer;
 
-    public Spider() {
+    public Spider(int spiderAddFactor) {
 
         MyApplication.getInstance().getNetComponent().inject(this);
         currentBitmapIndex = 0;
 
+        this.spiderAddFactor = addFactor = spiderAddFactor;
         countdown = GameActivity.getCountdownValue() * 800;
 
         timer = new CountDownTimer(countdown * 800, 100) {
@@ -59,10 +61,6 @@ public class Spider {
 
     public int getAddFactor() {
         return addFactor;
-    }
-
-    public void setAddFactor(int addFactor) {
-        this.addFactor = addFactor;
     }
 
     public int getxStart() {
@@ -144,5 +142,18 @@ public class Spider {
                 countdown = 0;
             }
         }.start();
+    }
+
+
+    public void moveUp() {
+        addFactor = spiderAddFactor * -1;
+    }
+
+    public void moveDown() {
+        addFactor = spiderAddFactor;
+    }
+
+    public void stopMoving() {
+        addFactor = 0;
     }
 }
