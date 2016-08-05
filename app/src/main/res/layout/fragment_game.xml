@@ -89,7 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
@@ -100,6 +100,15 @@
         ads:adSize="BANNER"
         ads:adUnitId="@string/banner_ad_unit_id"/>
 
+    <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
+        android:id="@+id/countdown_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="3"
+        android:visibility="gone"
+        android:textColor="@android:color/white"
+        android:textSize="66sp"/>
     <!--<TextView-->
     <!--android:id="@+id/ready_text"-->
     <!--android:layout_width="wrap_content"-->

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -21,6 +20,9 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,10 +47,9 @@ import com.google.android.gms.games.leaderboard.Leaderboards.LoadPlayerScoreResu
 import com.google.android.gms.games.leaderboard.Leaderboards.SubmitScoreResult;
 import com.google.android.gms.plus.Plus;
 import com.google.example.games.basegameutils.BaseGameUtils;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.analytics.FirebaseAnalytics.Event;
+import com.google.firebase.analytics.FirebaseAnalytics.Param;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,10 +73,10 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     private static final int FRAME_RATE = 25; //40 frames per second
 
     @Inject
-    MixpanelAPI mixpanel;
-
-    @Inject
     SharedPreferences preferences;
+
+    //    @Inject
+    FirebaseAnalytics mFirebaseAnalytics;
 
     private GameBoard gameBoard;
     private int playerAddFactor;
@@ -107,7 +108,11 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     private TextView leaderboardText;
     private ImageView signOutImage;
     private TextView signOutText;
-    private MediaPlayer mp;
+    private MediaPlayer mBGMediaPlayer;
+    private MediaPlayer mBiteMediaPlayer;
+    private Animation fadeInAnimation;
+    private TextView countdownText;
+    private CountDownTimer countdownTimer;
 
     public static int getNoOfStars() {
         return NUM_OF_STARS;
@@ -117,6 +122,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -124,16 +130,23 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         setContentView(R.layout.activity_game);
         MyApplication.getInstance().getNetComponent().inject(this);
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         findViewById(R.id.help_image).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO SHow help
+                findViewById(R.id.layout_help).setVisibility(View.VISIBLE);
             }
         });
-
+        findViewById(R.id.close_button).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.layout_help).setVisibility(View.GONE);
+            }
+        });
         findViewById(R.id.play_image).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                mBGMediaPlayer.start();
                 findViewById(R.id.layout_fragment_splash).setVisibility(View.GONE);
                 initGfx();
                 //   findViewById(R.id.layout_fragment_game).setVisibility(View.VISIBLE);
@@ -159,6 +172,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         leaderboardText = (TextView) findViewById(R.id.scoreboard_leaderboard_text);
         signOutImage = (ImageView) findViewById(R.id.scoreboard_signout_button);
         signOutText = (TextView) findViewById(R.id.scoreboard_signout_text);
+        countdownText = (TextView) findViewById(R.id.countdown_text);
 //        readyText = (TextView) findViewById(R.id.ready_text);
 
         gameBoard = (GameBoard) findViewById(R.id.the_canvas);
@@ -238,11 +252,32 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 //                    readyText.setVisibility(View.GONE);
 //                } else
 
-                if (scoreboardLayout.getVisibility() != View.VISIBLE) {
+                if (!gameBoard.isCollisionDetected()) {
                     pauseGame();
                 }
             }
         });
+
+        fadeInAnimation = AnimationUtils.loadAnimation(GameActivity.this, android.R.anim.fade_in);
+// Now Set your animation
+        fadeInAnimation.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                scoreboardLayout.setVisibility(View.VISIBLE);
+                mAdView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
     }
 
     private final Object lock = new Object();
@@ -252,11 +287,18 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             isPaused = true;
         }
 
+        if (mBGMediaPlayer != null)
+            mBGMediaPlayer.pause();
+
         playButton.setImageResource(R.drawable.play);
 
         if (timer != null)
             timer.cancel();
 
+        if (countdownTimer != null)
+            countdownTimer.cancel();
+
+        countdownText.setVisibility(View.GONE);
         scoreBoardTitleText.setText("Game Paused");
         scoreBoardTimerText.setText("Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
 
@@ -293,35 +335,53 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             isPaused = false;
         }
 
-        timer = new CountDownTimer(120000, 1000) {
+        if (mBGMediaPlayer != null)
+            mBGMediaPlayer.start();
+
+        countdownText.setVisibility(View.VISIBLE);
+        mAdView.setVisibility(View.GONE);
+        scoreboardLayout.setVisibility(View.GONE);
+        countdownTimer = new CountDownTimer(3000, 900) {
+            int countdown = 3;
 
             @Override
             public void onTick(long millisUntilFinished) {
-                timeElapsed++;
-                timerText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+                countdownText.setText(String.valueOf(countdown));
+                countdown--;
+                Log.d("Countdown", String.valueOf(millisUntilFinished));
             }
-
 
             @Override
             public void onFinish() {
-                timer.start();
+                countdownText.setVisibility(View.GONE);
+                timer = new CountDownTimer(120000, 1000) {
+
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        timeElapsed++;
+                        timerText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+                    }
+
+
+                    @Override
+                    public void onFinish() {
+                        timer.start();
+                    }
+
+                }.start();
+
+                if (gameBoard != null && gameBoard.getSpiderArray() != null)
+                    for (Spider s : gameBoard.getSpiderArray())
+                        if (s != null)
+                            s.unPause();
+
+                frame.removeCallbacks(frameUpdate);
+                //make any updates to on screen objects here
+                //then invoke the on draw by invalidating the canvas
+                gameBoard.invalidate();
+                frame.postDelayed(frameUpdate, 0);
             }
-
         }.start();
-
-        mAdView.setVisibility(View.GONE);
-        scoreboardLayout.setVisibility(View.GONE);
-
-        if (gameBoard != null && gameBoard.getSpiderArray() != null)
-            for (Spider s : gameBoard.getSpiderArray())
-                if (s != null)
-                    s.unPause();
-
-        frame.removeCallbacks(frameUpdate);
-        //make any updates to on screen objects here
-        //then invoke the on draw by invalidating the canvas
-        gameBoard.invalidate();
-        frame.postDelayed(frameUpdate, FRAME_RATE);
     }
 
     @Override
@@ -332,15 +392,14 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             mGoogleApiClient.connect();
         }
 
-        mp = MediaPlayer.create(this, R.raw.sound_bg);
-        mp.setOnCompletionListener(new OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.start();
-            }
-        });
+        if (mBGMediaPlayer == null) {
+            mBGMediaPlayer = MediaPlayer.create(this, R.raw.sound_bg);
+            mBGMediaPlayer.setLooping(true);
+        }
 
-        mp.start();
+        if (mBiteMediaPlayer == null) {
+            mBiteMediaPlayer = MediaPlayer.create(this, R.raw.chew);
+        }
     }
 
     @Override
@@ -351,12 +410,20 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             mGoogleApiClient.disconnect();
         }
 
-        if (mp != null) {
-            mp.reset();
-            mp.release();
-            mp = null;
+        if (mBGMediaPlayer != null) {
+            mBGMediaPlayer.reset();
+            mBGMediaPlayer.release();
+            mBGMediaPlayer = null;
         }
 
+        if (mBiteMediaPlayer != null) {
+            mBiteMediaPlayer.reset();
+            mBiteMediaPlayer.release();
+            mBiteMediaPlayer = null;
+        }
+
+        if (!gameBoard.isCollisionDetected() && !isPaused)
+            pauseGame();
     }
 
     synchronized public void initGfx() {
@@ -393,7 +460,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         if (v.getId() == R.id.scoreboard_signout_button || v.getId() == R.id.scoreboard_signout_text) {
             // sign out.
             if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-                preferences.edit().putBoolean(EXPLICIT_SIGN_OUT, true).commit();
+                preferences.edit().putBoolean(EXPLICIT_SIGN_OUT, true).apply();
                 Games.signOut(mGoogleApiClient);
                 mGoogleApiClient.disconnect();
 
@@ -414,14 +481,19 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                 }
             }
 
+            mBGMediaPlayer.start();
             initGfx();
         } else if (v.getId() == R.id.scoreboard_leaderboard_button || v.getId() == R.id.scoreboard_leaderboard_text) {
             showLeadershipBoard();
         } else if (v.getId() == R.id.scoreboard_share_button || v.getId() == R.id.scoreboard_share_text) {
+            long high = preferences.getLong(HIGHSCORE, 0);
+            if (high < timeElapsed)
+                high = timeElapsed;
+
             final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "Save poor Johnny from the spiders!!! \nhttps://play.google.com/store/apps/details?id=" + appPackageName);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Try and beat my high score of " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60) + " at Spider Attack\nhttps://goo.gl/bOhbH3");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
         } else if (v.getId() == R.id.scoreboard_rate_button || v.getId() == R.id.scoreboard_rate_text) {
@@ -443,13 +515,15 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             }
 
             if (gameBoard.isCollisionDetected()) {
+                mBGMediaPlayer.pause();
+                mBiteMediaPlayer.start();
+
                 scoreBoardTitleText.setText("Game Over");
                 playButton.setImageResource(R.drawable.replay);
                 timerLayout.setVisibility(View.INVISIBLE);
                 timer.cancel();
 
-                scoreboardLayout.setVisibility(View.VISIBLE);
-                mAdView.setVisibility(View.VISIBLE);
+                scoreboardLayout.startAnimation(fadeInAnimation);
                 scoreBoardTimerText.setText("Score- " + String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
 
                 long high = preferences.getLong(HIGHSCORE, 0);
@@ -472,13 +546,17 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                                     LeaderboardVariant.TIME_SPAN_ALL_TIME).rawScore / 1000;
                             scoreBoardHighText.setText("High Score- " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
 
-                            preferences.edit().putLong(HIGHSCORE, high).commit();
+                            Log.d("Score: 549 ", String.valueOf(high));
+                            preferences.edit().putLong(HIGHSCORE, high).apply();
                         }
 
                         @Override
                         public void onUnresolvableFailure(Status status) {
 
                             Log.d(TAG, status.getStatusMessage());
+
+                            if (status.getStatusCode() == 2)
+                                mGoogleApiClient.reconnect();
                         }
                     });
                 } else {
@@ -486,17 +564,17 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 //                    leaderboardText.setVisibility(View.INVISIBLE);
                     signOutImage.setImageResource(R.drawable.controller);
                     signOutText.setText("Sign In");
-                    if (high < timeElapsed)
-                        preferences.edit().putLong(HIGHSCORE, timeElapsed).commit();
+                    if (high < timeElapsed) {
+                        Log.d("Score: 569 ", String.valueOf(timeElapsed));
+                        preferences.edit().putLong(HIGHSCORE, timeElapsed).apply();
+                    }
                 }
 
-                try {
-                    JSONObject props = new JSONObject();
-                    props.put("Current Score", timeElapsed);
-                    mixpanel.track("Score", props);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Bundle bundle = new Bundle();
+                bundle.putLong(Param.SCORE, timeElapsed);
+                bundle.putLong(Param.VALUE, timeElapsed);
+                mFirebaseAnalytics.logEvent(Event.POST_SCORE, bundle);
+
                 return;
             }
 
@@ -515,7 +593,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 //        leaderboardText.setVisibility(View.VISIBLE);
         signOutImage.setImageResource(R.drawable.controller_filled);
         signOutText.setText("Sign Out");
-        preferences.edit().putBoolean(EXPLICIT_SIGN_OUT, false).commit();
+        preferences.edit().putBoolean(EXPLICIT_SIGN_OUT, false).apply();
         if (preferences.getBoolean(IS_FIRST_CONNECTION, true)) {
             loadScoreOfLeaderBoard();
             preferences.edit().putBoolean(IS_FIRST_CONNECTION, false).apply();
@@ -533,7 +611,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                         // here you can get the score like this
                         long high = scoreResult.getScore().getRawScore() / 1000;
                         scoreBoardHighText.setText("High Score- " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
-                        preferences.edit().putLong(HIGHSCORE, scoreResult.getScore().getRawScore() / 1000).commit();
+                        preferences.edit().putLong(HIGHSCORE, scoreResult.getScore().getRawScore() / 1000).apply();
                     }
                 }
             });
