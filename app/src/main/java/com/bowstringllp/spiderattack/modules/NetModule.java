@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import com.bowstringllp.spiderattack.R;
 import com.bowstringllp.spiderattack.util.Constants;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import java.text.SimpleDateFormat;
 
@@ -37,6 +38,12 @@ public class NetModule {
     @Provides
     FirebaseAnalytics getFirebase(Application app) {
         return FirebaseAnalytics.getInstance(app.getApplicationContext());
+    }
+
+    @Singleton
+    @Provides
+    MixpanelAPI getMixPanel(Application app) {
+        return MixpanelAPI.getInstance(app, app.getString(R.string.mixpanel_token));
     }
 
     @Provides

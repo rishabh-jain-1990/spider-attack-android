@@ -50,6 +50,10 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.analytics.FirebaseAnalytics.Event;
 import com.google.firebase.analytics.FirebaseAnalytics.Param;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,9 +77,12 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     private static final int FRAME_RATE = 25; //40 frames per second
 
     @Inject
+    MixpanelAPI mixpanel;
+
+    @Inject
     SharedPreferences preferences;
 
-    //    @Inject
+    @Inject
     FirebaseAnalytics mFirebaseAnalytics;
 
     private GameBoard gameBoard;
@@ -130,7 +137,6 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         setContentView(R.layout.activity_game);
         MyApplication.getInstance().getNetComponent().inject(this);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         findViewById(R.id.help_image).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -564,10 +570,16 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 //                    leaderboardText.setVisibility(View.INVISIBLE);
                     signOutImage.setImageResource(R.drawable.controller);
                     signOutText.setText("Sign In");
-                    if (high < timeElapsed) {
-                        Log.d("Score: 569 ", String.valueOf(timeElapsed));
+                    if (high < timeElapsed)
                         preferences.edit().putLong(HIGHSCORE, timeElapsed).apply();
-                    }
+                }
+
+                try {
+                    JSONObject props = new JSONObject();
+                    props.put("Current Score", timeElapsed);
+                    mixpanel.track("Score", props);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
                 Bundle bundle = new Bundle();
