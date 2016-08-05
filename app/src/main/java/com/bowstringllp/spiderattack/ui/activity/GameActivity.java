@@ -30,6 +30,7 @@ import com.bowstringllp.spiderattack.MyApplication;
 import com.bowstringllp.spiderattack.R;
 import com.bowstringllp.spiderattack.model.Spider;
 import com.bowstringllp.spiderattack.ui.view.GameBoard;
+import com.bowstringllp.spiderattack.util.Constants;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -544,6 +545,17 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 //                    leaderboardText.setVisibility(View.VISIBLE);
                     signOutImage.setImageResource(R.drawable.controller_filled);
                     signOutText.setText("Sign Out");
+
+                    if (timeElapsed >= Constants.ROOKIE_TIME_THRESHOLD)
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_rookie));
+                    if (timeElapsed >= Constants.BEGINNER_TIME_THRESHOLD)
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_beginner));
+                    if (timeElapsed >= Constants.INTERMEDIATE_TIME_THRESHOLD)
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_intermediate));
+                    if (timeElapsed >= Constants.EXPERT_TIME_THRESHOLD)
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_expert));
+                    if (timeElapsed >= Constants.INVINCIBLE_TIME_THRESHOLD)
+                        Games.Achievements.unlock(mGoogleApiClient, getString(R.string.achievement_invincible));
 
                     Games.Leaderboards.submitScoreImmediate(mGoogleApiClient, getString(R.string.leaderboard_best_time), timeElapsed * 1000).setResultCallback(new ResolvingResultCallbacks<SubmitScoreResult>(GameActivity.this, REQUEST_LEADERBOARD) {
                         @Override
