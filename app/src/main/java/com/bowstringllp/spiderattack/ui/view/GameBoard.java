@@ -136,8 +136,7 @@ public class GameBoard extends View {
         canvas.drawRect(0, 0, getWidth(), getHeight(), p);
 
         p.setAlpha(255);
-        if (barWidth == 0)
-            barWidth = getWidth() / NUM_OF_STARS;
+        barWidth = getWidth() / NUM_OF_STARS;
 
         if (bee == null)
             bee = new Bee(barWidth / 12);

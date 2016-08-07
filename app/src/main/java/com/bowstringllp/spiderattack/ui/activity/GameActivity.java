@@ -153,6 +153,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         findViewById(R.id.play_image).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                isPaused = false;
                 mBGMediaPlayer.start();
                 findViewById(R.id.layout_fragment_splash).setVisibility(View.GONE);
                 initGfx();
@@ -438,7 +439,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         //them from inadvertently stacking up.
         gameBoard.reset();
         mAdView.setVisibility(View.GONE);
-        scoreboardLayout.setVisibility(View.GONE);
+        scoreboardLayout.setVisibility(View.INVISIBLE);
         timerLayout.setVisibility(View.VISIBLE);
         timerText.setText("0 sec");
         frame.removeCallbacks(frameUpdate);
