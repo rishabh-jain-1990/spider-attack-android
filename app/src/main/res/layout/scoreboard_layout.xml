@@ -8,6 +8,17 @@
     android:background="@color/black_translucent"
     android:padding="10dp">
 
+    <ImageView
+        android:id="@+id/scoreboard_mute_button"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:adjustViewBounds="true"
+        android:background="@drawable/background_round_black_translucent"
+        android:padding="15dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/mute_icon"/>
+
     <com.bowstringllp.spiderattack.ui.view.CustomFontTextView
         android:id="@+id/game_over_label"
         android:layout_width="wrap_content"
@@ -80,9 +91,9 @@
         android:layout_alignLeft="@id/scoreboard_signout_button"
         android:layout_alignRight="@id/scoreboard_signout_button"
         android:layout_below="@id/scoreboard_signout_button"
+        android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="Sign Out"
-        android:layout_marginTop="5dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"/>
 
@@ -109,9 +120,9 @@
         android:layout_alignLeft="@id/scoreboard_leaderboard_button"
         android:layout_alignRight="@id/scoreboard_leaderboard_button"
         android:layout_below="@id/scoreboard_leaderboard_button"
+        android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="Leader Board"
-        android:layout_marginTop="5dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"/>
 
@@ -138,9 +149,9 @@
         android:layout_alignLeft="@id/scoreboard_rate_button"
         android:layout_alignRight="@id/scoreboard_rate_button"
         android:layout_below="@id/scoreboard_rate_button"
+        android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="Rate"
-        android:layout_marginTop="5dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"/>
 
@@ -167,9 +178,9 @@
         android:layout_alignLeft="@id/scoreboard_share_button"
         android:layout_alignRight="@id/scoreboard_share_button"
         android:layout_below="@id/scoreboard_share_button"
+        android:layout_marginTop="5dp"
         android:gravity="center"
         android:text="Share"
-        android:layout_marginTop="5dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"/>
 </android.support.percent.PercentRelativeLayout>

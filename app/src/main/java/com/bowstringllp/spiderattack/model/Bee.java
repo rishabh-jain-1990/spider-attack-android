@@ -12,14 +12,14 @@ import javax.inject.Named;
  * Created by rishabhjain on 12/24/15.
  */
 public class Bee {
-    private final int playerAddFactor;
+    private final double playerAddFactor;
     private int xStart;
     private int xEnd;
     private int width;
     private int yStart;
     private int yEnd;
     private int height;
-    private int addFactor;
+    private double addFactor;
 
     @Inject
     @Named(Constants.BEE_BITMAP)
@@ -29,7 +29,7 @@ public class Bee {
     private final int FRAME_RATE = 3;
     private int currentFrame = 0;
 
-    public Bee(int playerAddFactor) {
+    public Bee(double playerAddFactor) {
         MyApplication.getInstance().getNetComponent().inject(this);
         currentBitmapIndex = 0;
         this.playerAddFactor = playerAddFactor;
@@ -82,7 +82,7 @@ public class Bee {
         return height;
     }
 
-    public int getAddFactor() {
+    public double getAddFactor() {
         return addFactor;
     }
 

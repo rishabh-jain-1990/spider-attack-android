@@ -14,7 +14,7 @@ import javax.inject.Named;
  * Created by rishabhjain on 12/24/15.
  */
 public class Spider {
-    private final int spiderAddFactor;
+    private final double spiderAddFactor;
     private int countdown;
     private int xStart;
     private int xEnd;
@@ -25,7 +25,7 @@ public class Spider {
     }
 
     private int yTurning;
-    private int addFactor;
+    private double addFactor;
 
     @Inject
     @Named(Constants.SPIDER_BITMAP)
@@ -37,7 +37,7 @@ public class Spider {
 
     private CountDownTimer timer;
 
-    public Spider(int spiderAddFactor) {
+    public Spider(double spiderAddFactor) {
 
         MyApplication.getInstance().getNetComponent().inject(this);
         currentBitmapIndex = 0;
@@ -59,7 +59,7 @@ public class Spider {
         }.start();
     }
 
-    public int getAddFactor() {
+    public double getAddFactor() {
         return addFactor;
     }
 

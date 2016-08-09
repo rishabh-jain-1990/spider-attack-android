@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -37,14 +38,12 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResolvingResultCallbacks;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
-import com.google.android.gms.games.leaderboard.Leaderboards.LoadPlayerScoreResult;
 import com.google.android.gms.games.leaderboard.Leaderboards.SubmitScoreResult;
 import com.google.android.gms.plus.Plus;
 import com.google.example.games.basegameutils.BaseGameUtils;
@@ -72,6 +71,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     private static final String EXPLICIT_SIGN_OUT = "Explicitly signed out";
     private static final String HIGHSCORE = "Game Highscore";
     private static final String IS_FIRST_CONNECTION = "Is connecting for first time";
+    private static final String IS_MUTE = "Is mute";
     private static final int NUM_OF_STARS = 10;
     private Handler frame = new Handler();
     //Divide the frame by 1000 to calculate how many times per second the screen will update.
@@ -121,6 +121,9 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
     private Animation fadeInAnimation;
     private TextView countdownText;
     private CountDownTimer countdownTimer;
+    private ImageView muteButton;
+    private boolean isMute = false;
+    private CountDownTimer mBGTimer;
 
     public static int getNoOfStars() {
         return NUM_OF_STARS;
@@ -154,7 +157,9 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             @Override
             public void onClick(View v) {
                 isPaused = false;
-                mBGMediaPlayer.start();
+
+                if (!isMute)
+                    mBGMediaPlayer.start();
                 findViewById(R.id.layout_fragment_splash).setVisibility(View.GONE);
                 initGfx();
                 //   findViewById(R.id.layout_fragment_game).setVisibility(View.VISIBLE);
@@ -170,6 +175,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                 .build();
 
         playButton = (ImageView) findViewById(R.id.scoreboard_play_button);
+        muteButton = (ImageView) findViewById(R.id.scoreboard_mute_button);
         timerText = (TextView) findViewById(R.id.timer_text);
         timerLayout = findViewById(R.id.timer_layout);
         scoreboardLayout = findViewById(R.id.scoreboard_layout);
@@ -247,6 +253,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         signOutImage.setOnClickListener(this);
         signOutText.setOnClickListener(this);
         playButton.setOnClickListener(this);
+        muteButton.setOnClickListener(this);
         findViewById(R.id.scoreboard_share_button).setOnClickListener(this);
         findViewById(R.id.scoreboard_share_text).setOnClickListener(this);
         findViewById(R.id.scoreboard_rate_button).setOnClickListener(this);
@@ -286,6 +293,8 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             }
         });
 
+        isMute = preferences.getBoolean(IS_MUTE, false);
+        muteButton.setImageResource(isMute ? R.drawable.mute_icon : R.drawable.unmute_icon);
     }
 
     private final Object lock = new Object();
@@ -295,8 +304,11 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             isPaused = true;
         }
 
-        if (mBGMediaPlayer != null)
+        if (mBGMediaPlayer != null) {
             mBGMediaPlayer.pause();
+            if (mBGTimer != null)
+                mBGTimer.cancel();
+        }
 
         playButton.setImageResource(R.drawable.play);
 
@@ -343,7 +355,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             isPaused = false;
         }
 
-        if (mBGMediaPlayer != null)
+        if (mBGMediaPlayer != null && !isMute)
             mBGMediaPlayer.start();
 
         countdownText.setVisibility(View.VISIBLE);
@@ -401,8 +413,26 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         }
 
         if (mBGMediaPlayer == null) {
-            mBGMediaPlayer = MediaPlayer.create(this, R.raw.sound_bg);
-            mBGMediaPlayer.setLooping(true);
+            mBGMediaPlayer = MediaPlayer.create(this, R.raw.sound_bg_short);
+            mBGMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    int time = new Random().nextInt(4) + 2;
+                    mBGTimer = new CountDownTimer(time * 1000, 1000) {
+
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            if(!isMute)
+                            mBGMediaPlayer.start();
+                        }
+                    }.start();
+                }
+            });
         }
 
         if (mBiteMediaPlayer == null) {
@@ -429,6 +459,9 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             mBiteMediaPlayer.release();
             mBiteMediaPlayer = null;
         }
+
+        if (mBGTimer != null)
+            mBGTimer.cancel();
 
         if (!gameBoard.isCollisionDetected() && !isPaused)
             pauseGame();
@@ -489,7 +522,8 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                 }
             }
 
-            mBGMediaPlayer.start();
+            if (!isMute)
+                mBGMediaPlayer.start();
             initGfx();
         } else if (v.getId() == R.id.scoreboard_leaderboard_button || v.getId() == R.id.scoreboard_leaderboard_text) {
             showLeadershipBoard();
@@ -511,6 +545,19 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             } catch (android.content.ActivityNotFoundException anfe) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
             }
+        } else if (v.getId() == R.id.scoreboard_mute_button) {
+            isMute = !isMute;
+            muteButton.setImageResource(isMute ? R.drawable.mute_icon : R.drawable.unmute_icon);
+            preferences.edit().putBoolean(IS_MUTE, isMute).apply();
+
+            if (isMute) {
+                mBGMediaPlayer.pause();
+
+                if (mBGTimer != null)
+                    mBGTimer.cancel();
+
+                mBiteMediaPlayer.pause();
+            }
         }
     }
 
@@ -524,7 +571,12 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 
             if (gameBoard.isCollisionDetected()) {
                 mBGMediaPlayer.pause();
-                mBiteMediaPlayer.start();
+
+                if (mBGTimer != null)
+                    mBGTimer.cancel();
+
+                if (!isMute)
+                    mBiteMediaPlayer.start();
 
                 scoreBoardTitleText.setText("Game Over");
                 playButton.setImageResource(R.drawable.replay);
@@ -629,15 +681,28 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 
     private void loadScoreOfLeaderBoard() {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            Games.Leaderboards.loadCurrentPlayerLeaderboardScore(mGoogleApiClient, getString(R.string.leaderboard_best_time), LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC).setResultCallback(new ResultCallback<LoadPlayerScoreResult>() {
+            long highscore = preferences.getLong(HIGHSCORE, 0);
+            if (timeElapsed > highscore)
+                highscore = timeElapsed;
+
+            Games.Leaderboards.submitScoreImmediate(mGoogleApiClient, getString(R.string.leaderboard_best_time), highscore * 1000).setResultCallback(new ResolvingResultCallbacks<SubmitScoreResult>(GameActivity.this, REQUEST_LEADERBOARD) {
                 @Override
-                public void onResult(final Leaderboards.LoadPlayerScoreResult scoreResult) {
-                    if (isScoreResultValid(scoreResult)) {
-                        // here you can get the score like this
-                        long high = scoreResult.getScore().getRawScore() / 1000;
-                        scoreBoardHighText.setText("High Score- " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
-                        preferences.edit().putLong(HIGHSCORE, scoreResult.getScore().getRawScore() / 1000).apply();
-                    }
+                public void onSuccess(SubmitScoreResult submitScoreResult) {
+                    long high = submitScoreResult.getScoreData().getScoreResult(
+                            LeaderboardVariant.TIME_SPAN_ALL_TIME).rawScore / 1000;
+                    scoreBoardHighText.setText("High Score- " + String.format("%02d", high / 60) + " : " + String.format("%02d", high % 60));
+
+                    Log.d("Score: 549 ", String.valueOf(high));
+                    preferences.edit().putLong(HIGHSCORE, high).apply();
+                }
+
+                @Override
+                public void onUnresolvableFailure(Status status) {
+
+                    Log.d(TAG, status.getStatusMessage());
+
+                    if (status.getStatusCode() == 2)
+                        mGoogleApiClient.reconnect();
                 }
             });
         }

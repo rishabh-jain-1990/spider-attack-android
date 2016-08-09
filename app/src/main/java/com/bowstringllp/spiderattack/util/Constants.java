@@ -12,4 +12,10 @@ public class Constants {
     public static int INTERMEDIATE_TIME_THRESHOLD = 120;
     public static int EXPERT_TIME_THRESHOLD = 300;
     public static int INVINCIBLE_TIME_THRESHOLD = 600;
+
+    // Divide the spider width by this to get the spider speed
+    public static double SPIDER_SPEED_DIVIDER = 16.5;
+
+    // Divide the spider width by this to get the spider speed
+    public static double BEE_SPEED_DIVIDER = 13;
 }

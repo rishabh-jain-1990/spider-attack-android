@@ -14,6 +14,7 @@ import com.bowstringllp.spiderattack.R;
 import com.bowstringllp.spiderattack.model.Bee;
 import com.bowstringllp.spiderattack.model.Spider;
 import com.bowstringllp.spiderattack.ui.activity.GameActivity;
+import com.bowstringllp.spiderattack.util.Constants;
 
 import java.util.Random;
 
@@ -139,7 +140,7 @@ public class GameBoard extends View {
         barWidth = getWidth() / NUM_OF_STARS;
 
         if (bee == null)
-            bee = new Bee(barWidth / 12);
+            bee = new Bee((int) (barWidth / Constants.BEE_SPEED_DIVIDER));
 
         if (bee.getyEnd() == 0) {
             bee.setyEnd(getHeight());
@@ -154,7 +155,7 @@ public class GameBoard extends View {
 
         for (int i = 0; i < NUM_OF_STARS; i++) {
             if (spiderArray[i] == null)
-                spiderArray[i] = new Spider(barWidth / 12);
+                spiderArray[i] = new Spider((int) (barWidth / Constants.SPIDER_SPEED_DIVIDER));
 
             if (measuredSpiderHeight == 0)
                 measuredSpiderHeight = (barWidth * spiderArray[i].getCurrentBitmap().getHeight()) / spiderArray[i].getCurrentBitmap().getWidth();
@@ -169,8 +170,17 @@ public class GameBoard extends View {
 
             if (spiderArray[i].getyEnd() >= getHeight()) {
                 spiderArray[i].moveUp();
-                spiderArray[i].setyTurning(measuredSpiderHeight + new Random().nextInt((getHeight() / 2) - measuredSpiderHeight));
+                spiderArray[i].setyTurning(getYTurning(i));
             } else if (spiderArray[i].getyEnd() <= spiderArray[i].getyTurning()) {
+//                if (i - 1 >= 0 && spiderArray[i - 1].getAddFactor() > 0 && Math.abs(spiderArray[i - 1].getyEnd() - spiderArray[i].getyEnd()) < bee.getHeight()) {
+//                    if (i + 1 < NUM_OF_STARS && spiderArray[i + 1].getAddFactor() > 0 && Math.abs(spiderArray[i + 1].getyEnd() - spiderArray[i].getyEnd()) < bee.getHeight()) {
+//                        int temp = (int) (spiderArray[i].getyTurning() - bee.getHeight());
+//
+//                        if (temp < measuredSpiderHeight)
+//                            temp = measuredSpiderHeight;
+//                        spiderArray[i].setyTurning(temp);
+//                    }
+//                } else
                 spiderArray[i].moveDown();
 //                safeBarFirst = new Random().nextInt(NUM_OF_STARS);
 //                do {
@@ -179,7 +189,7 @@ public class GameBoard extends View {
             }
 
             spiderArray[i].nextBitmap();
-            spiderArray[i].setyEnd(spiderArray[i].getyEnd() + spiderArray[i].getAddFactor());
+            spiderArray[i].setyEnd((int) (spiderArray[i].getyEnd() + spiderArray[i].getAddFactor()));
 
             Rect rect = new Rect(spiderArray[i].getxStart() + (barWidth / 2) - (barWidth / 100), 0, spiderArray[i].getxEnd() - (barWidth / 2) + (barWidth / 100), spiderArray[i].getyEnd() - measuredSpiderHeight + (measuredSpiderHeight / 3));
             p.setColor(Color.BLACK);
@@ -196,13 +206,13 @@ public class GameBoard extends View {
         }
 
         if ((bee.getxEnd() + bee.getAddFactor()) <= getWidth() && (bee.getxStart() + bee.getAddFactor()) >= 0) {
-            bee.setxStart(bee.getxStart() + bee.getAddFactor());
+            bee.setxStart((int) (bee.getxStart() + bee.getAddFactor()));
             bee.setxEnd(bee.getxStart() + bee.getWidth());
         }
 
         p.setColor(Color.MAGENTA);
         //draw the stars
-        p.setStrokeWidth(bee.getWidth());
+        p.setStrokeWidth((float) bee.getWidth());
 
         Rect rect = new Rect(bee.getxStart(), bee.getyStart(), bee.getxEnd(), bee.getyEnd());
         if (bee.getAddFactor() > 0)
@@ -218,7 +228,9 @@ public class GameBoard extends View {
 //            canvas.drawRect(i * barWidth, 0, barWidth * (i + 1), yPosition, p);
 //        }
 
-        collisionDetected = checkForCollision();
+        collisionDetected =
+
+                checkForCollision();
 //        if (collisionDetected) {
 //            //if there is one lets draw a red X
 //            p.setColor(Color.RED);
@@ -231,9 +243,25 @@ public class GameBoard extends View {
 //        }
     }
 
+    public int getYTurning(int index) {
+        int yTurning = measuredSpiderHeight + new Random().nextInt((getHeight() / 2) - measuredSpiderHeight);
+//        if (index - 1 >= 0 && Math.abs(spiderArray[index - 1].getyTurning() - spiderArray[index].getyTurning()) < bee.getHeight()) {
+//            if (index + 1 < NUM_OF_STARS && Math.abs(spiderArray[index + 1].getyTurning() - spiderArray[index].getyTurning()) < bee.getHeight()) {
+//                int temp = spiderArray[index].getyTurning() - bee.getHeight();
+//
+//                if (temp < measuredSpiderHeight)
+//                    temp = spiderArray[index].getyTurning() + bee.getHeight();
+//
+//                spiderArray[index].setyTurning(temp);
+//            }
+//        }
+
+        return yTurning;
+    }
+
     public void reset() {
         spiderArray = new Spider[NUM_OF_STARS];
-        bee = new Bee(barWidth / 5);
+        bee = new Bee((int) (barWidth / Constants.BEE_SPEED_DIVIDER));
         collisionDetected = false;
     }
 }
