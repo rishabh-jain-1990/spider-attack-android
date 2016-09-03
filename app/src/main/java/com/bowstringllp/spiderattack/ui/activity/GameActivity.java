@@ -147,12 +147,14 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                 findViewById(R.id.layout_help).setVisibility(View.VISIBLE);
             }
         });
+
         findViewById(R.id.close_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 findViewById(R.id.layout_help).setVisibility(View.GONE);
             }
         });
+
         findViewById(R.id.play_image).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -374,21 +376,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             @Override
             public void onFinish() {
                 countdownText.setVisibility(View.GONE);
-                timer = new CountDownTimer(120000, 1000) {
-
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        timeElapsed++;
-                        timerText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
-                    }
-
-
-                    @Override
-                    public void onFinish() {
-                        timer.start();
-                    }
-
-                }.start();
+                startScoreTimer();
 
                 if (gameBoard != null && gameBoard.getSpiderArray() != null)
                     for (Spider s : gameBoard.getSpiderArray())
@@ -427,8 +415,8 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 
                         @Override
                         public void onFinish() {
-                            if(!isMute)
-                            mBGMediaPlayer.start();
+                            if (!isMute && mBGMediaPlayer != null)
+                                mBGMediaPlayer.start();
                         }
                     }.start();
                 }
@@ -437,6 +425,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
 
         if (mBiteMediaPlayer == null) {
             mBiteMediaPlayer = MediaPlayer.create(this, R.raw.chew);
+            mBiteMediaPlayer.setVolume(0.5f, 0.5f);
         }
     }
 
@@ -479,21 +468,7 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
         frame.postDelayed(frameUpdate, FRAME_RATE);
 
         timeElapsed = 0;
-        timer = new CountDownTimer(120000, 1000) {
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-                timeElapsed++;
-                timerText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
-            }
-
-
-            @Override
-            public void onFinish() {
-                timer.start();
-            }
-
-        }.start();
+        startScoreTimer();
     }
 
     @Override
@@ -770,6 +745,27 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
                 }
             }
         }
+    }
+
+    private void startScoreTimer() {
+        timer = new CountDownTimer(120000, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeElapsed++;
+                timerText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+
+                if (timeElapsed >= Constants.LEVEL_UP_TIME && timeElapsed % Constants.LEVEL_UP_TIME < Constants.LEVEL_UP_TIME / 10 && gameBoard != null)
+                    for (Spider s : gameBoard.getSpiderArray())
+                        s.speedUp();
+            }
+
+            @Override
+            public void onFinish() {
+                timer.start();
+            }
+
+        }.start();
     }
 
     public static int getCountdownValue() {

@@ -29,9 +29,10 @@ android {
         applicationId "com.bowstringllp.spiderattack"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 4
-        versionName "1.0.3"
+        versionCode 7
+        versionName "1.0.6"
     }
+
     buildTypes {
         release {
             minifyEnabled false

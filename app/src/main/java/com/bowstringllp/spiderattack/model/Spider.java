@@ -14,18 +14,20 @@ import javax.inject.Named;
  * Created by rishabhjain on 12/24/15.
  */
 public class Spider {
-    private final double spiderAddFactor;
+    private final double minAddFactorValue;
+    private double currentAddFactorValue;
+    private double maxAddFactorValue;
     private int countdown;
-    private int xStart;
-    private int xEnd;
-    private int yEnd = 5;
+    private double xStart;
+    private double xEnd;
+    private double yEnd = 5;
 
     public int getCountdown() {
         return countdown;
     }
 
     private int yTurning;
-    private double addFactor;
+    private double currentAddFactor;
 
     @Inject
     @Named(Constants.SPIDER_BITMAP)
@@ -37,12 +39,14 @@ public class Spider {
 
     private CountDownTimer timer;
 
-    public Spider(double spiderAddFactor) {
+    public Spider(double minAddFactorValue) {
 
         MyApplication.getInstance().getNetComponent().inject(this);
         currentBitmapIndex = 0;
 
-        this.spiderAddFactor = addFactor = spiderAddFactor;
+        this.minAddFactorValue = currentAddFactor = currentAddFactorValue = minAddFactorValue;
+        maxAddFactorValue = minAddFactorValue * 2;
+
         countdown = GameActivity.getCountdownValue() * 800;
 
         timer = new CountDownTimer(countdown * 800, 100) {
@@ -59,32 +63,32 @@ public class Spider {
         }.start();
     }
 
-    public double getAddFactor() {
-        return addFactor;
+    public double getCurrentAddFactor() {
+        return currentAddFactor;
     }
 
-    public int getxStart() {
+    public double getxStart() {
         return xStart;
 
     }
 
-    public void setxStart(int xStart) {
+    public void setxStart(double xStart) {
         this.xStart = xStart;
     }
 
-    public int getxEnd() {
+    public double getxEnd() {
         return xEnd;
     }
 
-    public void setxEnd(int xEnd) {
+    public void setxEnd(double xEnd) {
         this.xEnd = xEnd;
     }
 
-    public int getyEnd() {
+    public double getyEnd() {
         return yEnd;
     }
 
-    public void setyEnd(int yEnd) {
+    public void setyEnd(double yEnd) {
         this.yEnd = yEnd;
     }
 
@@ -146,14 +150,32 @@ public class Spider {
 
 
     public void moveUp() {
-        addFactor = spiderAddFactor * -1;
+        currentAddFactor = currentAddFactorValue * -1;
     }
 
     public void moveDown() {
-        addFactor = spiderAddFactor;
+        currentAddFactor = currentAddFactorValue;
     }
 
     public void stopMoving() {
-        addFactor = 0;
+        currentAddFactor = 0;
+    }
+
+    public void speedUp() {
+        currentAddFactorValue += (minAddFactorValue / Constants.SPIDER_SPEED_STEP_DIVIDER);
+
+        if (currentAddFactorValue >= maxAddFactorValue)
+            currentAddFactorValue = maxAddFactorValue;
+    }
+
+    public void speedDown() {
+        currentAddFactorValue -= (minAddFactorValue / Constants.SPIDER_SPEED_STEP_DIVIDER);
+
+        if (currentAddFactorValue <= minAddFactorValue)
+            currentAddFactorValue = minAddFactorValue;
+    }
+
+    public void speedReset() {
+        currentAddFactorValue = minAddFactorValue;
     }
 }
