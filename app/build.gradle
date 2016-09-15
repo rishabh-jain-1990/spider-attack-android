@@ -1,0 +1,63 @@
+buildscript {
+    repositories {
+    }
+
+    dependencies {
+    }
+}
+
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+repositories {
+}
+
+
+android {
+    signingConfigs {
+        release {
+            keyAlias 'Spider_Attack'
+            keyPassword 'Spider_Attack_App'
+            storeFile file('/Users/rishabhjain/Documents/Project Resources/Spitack/release_key.jks')
+            storePassword 'Spider_Attack'
+        }
+    }
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+    defaultConfig {
+        applicationId "com.bowstringllp.spiderattack"
+        minSdkVersion 14
+        targetSdkVersion 22
+        versionCode 7
+        versionName "1.0.6"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    apt 'com.google.dagger:dagger-compiler:2.5'
+    provided 'javax.annotation:jsr250-api:1.0'
+    compile project(':BaseGameUtils')
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.google.android.gms:play-services-games:9.4.0'
+    compile 'com.google.firebase:firebase-core:9.4.0'
+    compile 'com.google.firebase:firebase-ads:9.4.0'
+    compile 'com.google.firebase:firebase-crash:9.4.0'
+    compile 'com.android.support:percent:23.4.0'
+    compile 'com.google.dagger:dagger:2.5'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.mixpanel.android:mixpanel-android:4.6.4'
+}
+
+apply plugin: 'com.google.gms.google-services'
