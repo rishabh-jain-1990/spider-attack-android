@@ -754,10 +754,15 @@ public class GameActivity extends AppCompatActivity implements OnClickListener, 
             public void onTick(long millisUntilFinished) {
                 timeElapsed++;
                 timerText.setText(String.format("%02d", timeElapsed / 60) + " : " + String.format("%02d", timeElapsed % 60));
+                if (gameBoard != null && gameBoard.getSpiderArray() != null && gameBoard.getSpiderArray()[0] != null && timeElapsed < 3)
+                    Log.w("Speed Up", "Speed = " + gameBoard.getSpiderArray()[0].getCurrentAddFactor());
 
-                if (timeElapsed >= Constants.LEVEL_UP_TIME && timeElapsed % Constants.LEVEL_UP_TIME < Constants.LEVEL_UP_TIME / 10 && gameBoard != null)
+                if (timeElapsed >= Constants.LEVEL_UP_TIME && timeElapsed % Constants.LEVEL_UP_TIME < Constants.SPIDER_SPEED_STEP_DURATION && gameBoard != null) {
                     for (Spider s : gameBoard.getSpiderArray())
                         s.speedUp();
+
+                    Log.w("Speed Up", "Speed = " + gameBoard.getSpiderArray()[0].getCurrentAddFactor());
+                }
             }
 
             @Override

@@ -162,14 +162,20 @@ public class Spider {
     }
 
     public void speedUp() {
-        currentAddFactorValue += (minAddFactorValue / Constants.SPIDER_SPEED_STEP_DIVIDER);
+        if (currentAddFactorValue > 0)
+            currentAddFactorValue += (minAddFactorValue / (Constants.SPIDER_SPEED_STEP_DIVIDER * Constants.SPIDER_SPEED_STEP_DURATION));
+        else
+            currentAddFactorValue -= (minAddFactorValue / (Constants.SPIDER_SPEED_STEP_DIVIDER * Constants.SPIDER_SPEED_STEP_DURATION));
 
         if (currentAddFactorValue >= maxAddFactorValue)
             currentAddFactorValue = maxAddFactorValue;
     }
 
     public void speedDown() {
-        currentAddFactorValue -= (minAddFactorValue / Constants.SPIDER_SPEED_STEP_DIVIDER);
+        if (currentAddFactorValue < 0)
+            currentAddFactorValue += (minAddFactorValue / (Constants.SPIDER_SPEED_STEP_DIVIDER * Constants.SPIDER_SPEED_STEP_DURATION));
+        else
+            currentAddFactorValue -= (minAddFactorValue / (Constants.SPIDER_SPEED_STEP_DIVIDER * Constants.SPIDER_SPEED_STEP_DURATION));
 
         if (currentAddFactorValue <= minAddFactorValue)
             currentAddFactorValue = minAddFactorValue;
