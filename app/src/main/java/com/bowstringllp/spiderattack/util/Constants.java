@@ -6,7 +6,7 @@ package com.bowstringllp.spiderattack.util;
 public class Constants {
     public static final String BEE_BITMAP = "Bee bitmap key";
     public static final String SPIDER_BITMAP = "spider bitmap key";
-    public static final long LEVEL_UP_TIME = 45;
+    public static final long LEVEL_UP_TIME = 60;
 
     public static final int ROOKIE_TIME_THRESHOLD = 30;
     public static final int BEGINNER_TIME_THRESHOLD = 60;
